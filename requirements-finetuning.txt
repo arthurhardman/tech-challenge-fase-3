@@ -1,0 +1,24 @@
+# requirements-finetuning.txt
+# ----------------------------------------------------------------------------
+# Dependências ADICIONAIS para o pipeline de fine-tuning LoRA/PEFT (Fase 3).
+# Instale por cima do requirements.txt principal, em um ambiente com GPU
+# (Google Colab T4/L4/A100, ou GPU própria com >= 16GB VRAM):
+#
+#   pip install -r requirements.txt
+#   pip install -r requirements-finetuning.txt
+#
+# Mantido separado do requirements.txt porque torch/bitsandbytes têm builds
+# específicos por SO/CUDA e não são necessários para rodar o restante do
+# projeto (pipeline tabular, imagem, AG, app Streamlit) em CPU.
+# ----------------------------------------------------------------------------
+
+torch==2.3.1
+transformers==4.44.2
+peft==0.12.0
+bitsandbytes==0.43.3
+accelerate==0.33.0
+trl==0.9.6
+datasets==2.20.0
+sentencepiece==0.2.0
+evaluate==0.4.2
+huggingface_hub==0.24.6

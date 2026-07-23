@@ -1,0 +1,39 @@
+pandas==2.2.2
+pyarrow==16.1.0
+numpy==1.26.4
+scikit-learn==1.5.0
+xgboost==2.0.3
+imbalanced-learn==0.12.3
+matplotlib==3.9.0
+seaborn==0.13.2
+shap==0.45.1
+joblib==1.4.2
+jupyter==1.0.0
+ipykernel==6.29.4
+python-docx==1.1.2
+
+# NOVOS (imagem)
+tensorflow==2.16.1
+opencv-python-headless==4.10.0.84
+kagglehub==0.2.7
+Pillow==10.3.0
+streamlit==1.36.0
+
+# NOVOS (Fase 2 — AG + LLM)
+pyyaml==6.0.1          # configs dos experimentos de AG
+requests==2.32.3       # cliente HTTP do Ollama (LLM local)
+pytest==8.2.2          # testes automatizados
+
+# NOVOS (Fase 3 — assistente médico: LangChain + LangGraph)
+langchain-core==1.5.0  # interfaces LLM/prompt/runnable
+langgraph==1.2.9       # fluxos de decisão (StateGraph)
+nbformat==5.10.4       # geração do notebook de demonstração
+# scikit-learn já listado acima é reutilizado no RAG (TF-IDF)
+
+# OPCIONAIS (Fase 3 — fine-tuning REAL por LoRA/PEFT; requerem GPU)
+# Descomente para rodar `train.py --mode real`:
+# torch==2.3.1
+# transformers==4.44.2
+# peft==0.12.0
+# datasets==2.21.0
+# accelerate==0.33.0

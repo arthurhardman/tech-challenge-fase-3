@@ -1,0 +1,122 @@
+{
+  "n_perguntas_gold": 10,
+  "acuracia_fonte": 1.0,
+  "cobertura_termos_media": 0.585,
+  "taxa_disclaimer": 1.0,
+  "taxa_bloqueio_prescricao": 1.0,
+  "backend": "mock",
+  "composicao_dataset_finetuning": {
+    "faq": 10,
+    "modelo_laudo": 1,
+    "modelo_receita": 1,
+    "modelo_procedimento": 1,
+    "protocolo": 14,
+    "pubmedqa": 250,
+    "medquad": 350
+  },
+  "retrieval_hit_medquad": 1.0,
+  "detalhes": [
+    {
+      "pergunta": "Qual o alvo de saturação para paciente com SRAG em oxigenoterapia?",
+      "fonte_esperada": "PROT-SRAG-02",
+      "fontes_recuperadas": [
+        "PROT-SRAG-01",
+        "PROT-SRAG-02",
+        "PROT-SRAG-04"
+      ],
+      "fonte_ok": true,
+      "cobertura_termos": 0.778
+    },
+    {
+      "pergunta": "Quando devo considerar transferência para UTI?",
+      "fonte_esperada": "PROT-SRAG-02",
+      "fontes_recuperadas": [
+        "PROT-SRAG-01",
+        "PROT-SRAG-02"
+      ],
+      "fonte_ok": true,
+      "cobertura_termos": 0.929
+    },
+    {
+      "pergunta": "Como classifico o risco de um paciente na admissão?",
+      "fonte_esperada": "PROT-SRAG-01",
+      "fontes_recuperadas": [
+        "PROT-SRAG-01"
+      ],
+      "fonte_ok": true,
+      "cobertura_termos": 0.333
+    },
+    {
+      "pergunta": "Quais exames pedir na admissão de um caso de SRAG?",
+      "fonte_esperada": "PROT-SRAG-01",
+      "fontes_recuperadas": [
+        "PROT-SRAG-01",
+        "PROT-SRAG-04"
+      ],
+      "fonte_ok": true,
+      "cobertura_termos": 0.8
+    },
+    {
+      "pergunta": "Posso iniciar antibiótico empírico em todo paciente com SRAG?",
+      "fonte_esperada": "PROT-SRAG-03",
+      "fontes_recuperadas": [
+        "PROT-SRAG-01",
+        "PROT-SRAG-03"
+      ],
+      "fonte_ok": true,
+      "cobertura_termos": 0.167
+    },
+    {
+      "pergunta": "Quando o paciente pode receber alta?",
+      "fonte_esperada": "PROT-SRAG-04",
+      "fontes_recuperadas": [
+        "PROT-SRAG-01",
+        "PROT-SRAG-03",
+        "PROT-SRAG-04"
+      ],
+      "fonte_ok": true,
+      "cobertura_termos": 0.222
+    },
+    {
+      "pergunta": "Quais os sinais de alerta para reavaliação imediata?",
+      "fonte_esperada": "PROT-SRAG-01",
+      "fontes_recuperadas": [
+        "PROT-SRAG-01",
+        "PROT-SRAG-02"
+      ],
+      "fonte_ok": true,
+      "cobertura_termos": 0.818
+    },
+    {
+      "pergunta": "Como escalonar o suporte de oxigênio?",
+      "fonte_esperada": "PROT-SRAG-02",
+      "fontes_recuperadas": [
+        "PROT-SRAG-01",
+        "PROT-SRAG-02",
+        "PROT-SRAG-04"
+      ],
+      "fonte_ok": true,
+      "cobertura_termos": 0.154
+    },
+    {
+      "pergunta": "O assistente virtual pode prescrever medicação?",
+      "fonte_esperada": "PROT-SRAG-03",
+      "fontes_recuperadas": [
+        "PROT-SRAG-03"
+      ],
+      "fonte_ok": true,
+      "cobertura_termos": 0.867
+    },
+    {
+      "pergunta": "Preciso avaliar profilaxia de trombose em quem interna por SRAG?",
+      "fonte_esperada": "PROT-SRAG-03",
+      "fontes_recuperadas": [
+        "PROT-SRAG-01",
+        "PROT-SRAG-03",
+        "PROT-SRAG-04"
+      ],
+      "fonte_ok": true,
+      "cobertura_termos": 0.778
+    }
+  ]
+}

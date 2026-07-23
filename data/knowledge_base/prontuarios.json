@@ -1,0 +1,815 @@
+[
+  {
+    "paciente_id": "PAC-0001",
+    "idade": 34,
+    "sexo": "M",
+    "spo2": 88,
+    "freq_respiratoria": 24,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "nenhuma"
+    ],
+    "classificacao_risco": "vermelho",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "concluido",
+      "gasometria": "pendente",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "aguardando_uti"
+  },
+  {
+    "paciente_id": "PAC-0002",
+    "idade": 31,
+    "sexo": "F",
+    "spo2": 93,
+    "freq_respiratoria": 23,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "renal"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0003",
+    "idade": 20,
+    "sexo": "M",
+    "spo2": 91,
+    "freq_respiratoria": 29,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "cardiopatia"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0004",
+    "idade": 65,
+    "sexo": "M",
+    "spo2": 95,
+    "freq_respiratoria": 24,
+    "febre": false,
+    "dispneia": false,
+    "comorbidades": [
+      "asma"
+    ],
+    "classificacao_risco": "verde",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0005",
+    "idade": 25,
+    "sexo": "M",
+    "spo2": 93,
+    "freq_respiratoria": 25,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "diabetes"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0006",
+    "idade": 67,
+    "sexo": "F",
+    "spo2": 95,
+    "freq_respiratoria": 22,
+    "febre": false,
+    "dispneia": false,
+    "comorbidades": [
+      "renal"
+    ],
+    "classificacao_risco": "verde",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0007",
+    "idade": 54,
+    "sexo": "M",
+    "spo2": 93,
+    "freq_respiratoria": 26,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "cardiopatia"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0008",
+    "idade": 47,
+    "sexo": "F",
+    "spo2": 95,
+    "freq_respiratoria": 22,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "cardiopatia",
+      "obesidade"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "concluido",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0009",
+    "idade": 66,
+    "sexo": "M",
+    "spo2": 93,
+    "freq_respiratoria": 20,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "diabetes"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0010",
+    "idade": 69,
+    "sexo": "F",
+    "spo2": 96,
+    "freq_respiratoria": 30,
+    "febre": true,
+    "dispneia": false,
+    "comorbidades": [
+      "nenhuma"
+    ],
+    "classificacao_risco": "verde",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0011",
+    "idade": 75,
+    "sexo": "F",
+    "spo2": 91,
+    "freq_respiratoria": 30,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "renal",
+      "cardiopatia"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "concluido",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0012",
+    "idade": 40,
+    "sexo": "M",
+    "spo2": 88,
+    "freq_respiratoria": 26,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "obesidade"
+    ],
+    "classificacao_risco": "vermelho",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "aguardando_uti"
+  },
+  {
+    "paciente_id": "PAC-0013",
+    "idade": 30,
+    "sexo": "M",
+    "spo2": 97,
+    "freq_respiratoria": 18,
+    "febre": false,
+    "dispneia": false,
+    "comorbidades": [
+      "cardiopatia"
+    ],
+    "classificacao_risco": "verde",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0014",
+    "idade": 89,
+    "sexo": "M",
+    "spo2": 93,
+    "freq_respiratoria": 25,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "asma",
+      "renal"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0015",
+    "idade": 63,
+    "sexo": "M",
+    "spo2": 88,
+    "freq_respiratoria": 34,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "diabetes"
+    ],
+    "classificacao_risco": "vermelho",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "aguardando_uti"
+  },
+  {
+    "paciente_id": "PAC-0016",
+    "idade": 62,
+    "sexo": "F",
+    "spo2": 90,
+    "freq_respiratoria": 32,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "cardiopatia",
+      "renal"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0017",
+    "idade": 44,
+    "sexo": "F",
+    "spo2": 90,
+    "freq_respiratoria": 19,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "asma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0018",
+    "idade": 63,
+    "sexo": "M",
+    "spo2": 90,
+    "freq_respiratoria": 23,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "cardiopatia",
+      "asma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0019",
+    "idade": 76,
+    "sexo": "F",
+    "spo2": 90,
+    "freq_respiratoria": 17,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "diabetes"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "concluido",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0020",
+    "idade": 47,
+    "sexo": "M",
+    "spo2": 96,
+    "freq_respiratoria": 17,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "obesidade",
+      "asma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0021",
+    "idade": 57,
+    "sexo": "M",
+    "spo2": 93,
+    "freq_respiratoria": 17,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "nenhuma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0022",
+    "idade": 27,
+    "sexo": "M",
+    "spo2": 90,
+    "freq_respiratoria": 21,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "nenhuma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "concluido",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0023",
+    "idade": 30,
+    "sexo": "F",
+    "spo2": 96,
+    "freq_respiratoria": 34,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "cardiopatia",
+      "obesidade"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0024",
+    "idade": 78,
+    "sexo": "M",
+    "spo2": 95,
+    "freq_respiratoria": 18,
+    "febre": true,
+    "dispneia": false,
+    "comorbidades": [
+      "diabetes"
+    ],
+    "classificacao_risco": "verde",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0025",
+    "idade": 51,
+    "sexo": "F",
+    "spo2": 95,
+    "freq_respiratoria": 25,
+    "febre": true,
+    "dispneia": false,
+    "comorbidades": [
+      "renal"
+    ],
+    "classificacao_risco": "verde",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "concluido",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0026",
+    "idade": 34,
+    "sexo": "F",
+    "spo2": 90,
+    "freq_respiratoria": 33,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "renal",
+      "cardiopatia"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0027",
+    "idade": 26,
+    "sexo": "F",
+    "spo2": 90,
+    "freq_respiratoria": 29,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "diabetes"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "pendente",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0028",
+    "idade": 90,
+    "sexo": "M",
+    "spo2": 96,
+    "freq_respiratoria": 33,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "renal"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0029",
+    "idade": 25,
+    "sexo": "F",
+    "spo2": 94,
+    "freq_respiratoria": 27,
+    "febre": false,
+    "dispneia": false,
+    "comorbidades": [
+      "obesidade"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0030",
+    "idade": 39,
+    "sexo": "M",
+    "spo2": 93,
+    "freq_respiratoria": 21,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "asma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "concluido",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0031",
+    "idade": 54,
+    "sexo": "F",
+    "spo2": 91,
+    "freq_respiratoria": 19,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "asma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "concluido",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0032",
+    "idade": 49,
+    "sexo": "F",
+    "spo2": 93,
+    "freq_respiratoria": 16,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "obesidade"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0033",
+    "idade": 23,
+    "sexo": "M",
+    "spo2": 90,
+    "freq_respiratoria": 24,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "diabetes"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0034",
+    "idade": 69,
+    "sexo": "F",
+    "spo2": 93,
+    "freq_respiratoria": 24,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "diabetes",
+      "renal"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0035",
+    "idade": 60,
+    "sexo": "F",
+    "spo2": 90,
+    "freq_respiratoria": 25,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "obesidade",
+      "asma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0036",
+    "idade": 42,
+    "sexo": "M",
+    "spo2": 94,
+    "freq_respiratoria": 28,
+    "febre": true,
+    "dispneia": true,
+    "comorbidades": [
+      "cardiopatia",
+      "asma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "pendente",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0037",
+    "idade": 85,
+    "sexo": "M",
+    "spo2": 97,
+    "freq_respiratoria": 21,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "diabetes",
+      "cardiopatia"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "concluido",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0038",
+    "idade": 25,
+    "sexo": "F",
+    "spo2": 93,
+    "freq_respiratoria": 31,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "asma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "concluido",
+      "gasometria": "pendente",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0039",
+    "idade": 51,
+    "sexo": "M",
+    "spo2": 91,
+    "freq_respiratoria": 16,
+    "febre": false,
+    "dispneia": true,
+    "comorbidades": [
+      "asma"
+    ],
+    "classificacao_risco": "amarelo",
+    "exames": {
+      "hemograma": "concluido",
+      "pcr": "concluido",
+      "gasometria": "pendente",
+      "rx_torax": "concluido"
+    },
+    "internado_em": "leito_enfermaria"
+  },
+  {
+    "paciente_id": "PAC-0040",
+    "idade": 35,
+    "sexo": "F",
+    "spo2": 97,
+    "freq_respiratoria": 20,
+    "febre": false,
+    "dispneia": false,
+    "comorbidades": [
+      "asma",
+      "renal"
+    ],
+    "classificacao_risco": "verde",
+    "exames": {
+      "hemograma": "pendente",
+      "pcr": "pendente",
+      "gasometria": "concluido",
+      "rx_torax": "pendente"
+    },
+    "internado_em": "leito_enfermaria"
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "mode": "demo",
+  "base_model": "meta-llama/Llama-3.2-1B-Instruct",
+  "epochs": 2,
+  "learning_rate": 0.0002,
+  "n_exemplos": 627,
+  "loss_por_passo": [
+    1.1337,
+    1.1311,
+    1.0889,
+    1.046,
+    1.0428,
+    0.5523,
+    0.5358,
+    0.4975,
+    0.4923,
+    0.5093
+  ],
+  "loss_final": 0.5093,
+  "train_runtime_s": 0.02
+}

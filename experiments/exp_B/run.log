@@ -1,0 +1,10 @@
+2026-06-27 14:07:58,504 | INFO | gen=0 best=0.5051 mean=0.4562 std=0.0230 elapsed=4.0s
+2026-06-27 14:08:01,645 | INFO | gen=1 best=0.5051 mean=0.4730 std=0.0240 elapsed=7.1s
+2026-06-27 14:08:04,882 | INFO | gen=2 best=0.5058 mean=0.4970 std=0.0101 elapsed=10.4s
+2026-06-27 14:08:07,645 | INFO | gen=3 best=0.5062 mean=0.4998 std=0.0065 elapsed=13.1s
+2026-06-27 14:08:10,707 | INFO | gen=4 best=0.5062 mean=0.5018 std=0.0047 elapsed=16.2s
+2026-06-27 14:08:13,646 | INFO | gen=5 best=0.5080 mean=0.4986 std=0.0161 elapsed=19.1s
+2026-06-27 14:08:16,004 | INFO | gen=6 best=0.5080 mean=0.5008 std=0.0076 elapsed=21.5s
+2026-06-27 14:08:18,604 | INFO | gen=7 best=0.5091 mean=0.5061 std=0.0022 elapsed=24.1s
+2026-06-27 14:08:21,143 | INFO | gen=8 best=0.5091 mean=0.5049 std=0.0084 elapsed=26.6s
+2026-06-27 14:08:23,038 | INFO | gen=9 best=0.5091 mean=0.5070 std=0.0044 elapsed=28.5s

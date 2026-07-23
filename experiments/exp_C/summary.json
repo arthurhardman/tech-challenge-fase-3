@@ -1,0 +1,29 @@
+{
+  "name": "exp_C",
+  "generations": 12,
+  "total_elapsed_s": 74.265,
+  "best_fitness": 0.5125676685885651,
+  "best_individual": {
+    "n_estimators": 550,
+    "max_depth": 3,
+    "learning_rate": 0.04244164034305957,
+    "subsample": 0.7692720928054625,
+    "colsample_bytree": 1.0,
+    "min_child_weight": 9,
+    "gamma": 3.8291721465349386,
+    "scale_pos_weight": 2.6132693515852807
+  },
+  "config": {
+    "population_size": 30,
+    "generations": 12,
+    "crossover_rate": 0.8,
+    "mutation_rate": 0.2,
+    "mutation_sigma": 0.2,
+    "tournament_k": 4,
+    "elitism_size": 2,
+    "n_jobs": -1,
+    "early_stopping_patience": 0,
+    "random_state": 42,
+    "name": "exp_C"
+  }
+}

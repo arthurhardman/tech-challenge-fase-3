@@ -1,0 +1,33 @@
+# Dados
+*.csv
+
+# Ambiente virtual
+/venv/
+/venv312/
+/.venv/
+/.venv312/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Artefatos pesados gerados pelo pipeline (não versionar)
+results/models/*.pkl
+data/processed/*.parquet
+data/processed/*.pkl
+src/results/models/*.pkl
+
+# Manter estrutura de diretórios e figuras no git
+!results/figures/.gitkeep
+!results/models/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Fase 3 — dados brutos dos datasets externos (não versionar; use scripts/fetch_datasets.py)
+data/external/

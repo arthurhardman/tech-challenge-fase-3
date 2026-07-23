@@ -1,0 +1,22 @@
+2026-07-22 02:18:34,224 | INFO | pergunta='[fluxo] risco vermelho' paciente=PAC-0001 fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=emitir_alerta
+2026-07-22 02:18:34,228 | INFO | pergunta='Qual a conduta recomendada para este paciente?' paciente=PAC-0004 fontes=['PROT-SRAG-01', 'PROT-SRAG-03', 'PROT-SRAG-04'] backend=mock bloqueio=False no=sugerir_conduta
+2026-07-22 02:19:35,166 | INFO | pergunta='Qual a conduta e exames pendentes?' paciente=PAC-0003 fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=cli_perguntar
+2026-07-22 02:20:25,638 | INFO | pergunta='[fluxo] risco vermelho' paciente=PAC-0001 fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=emitir_alerta
+2026-07-22 02:20:25,658 | INFO | pergunta='Qual a conduta recomendada para este paciente?' paciente=PAC-0002 fontes=['PROT-SRAG-01', 'PROT-SRAG-03', 'PROT-SRAG-04'] backend=mock bloqueio=False no=sugerir_conduta
+2026-07-22 02:20:25,663 | INFO | pergunta='teste' paciente=None fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=None
+2026-07-22 02:20:42,025 | INFO | pergunta='[fluxo] risco vermelho' paciente=PAC-0001 fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=emitir_alerta
+2026-07-22 02:20:42,037 | INFO | pergunta='Qual a conduta recomendada para este paciente?' paciente=PAC-0002 fontes=['PROT-SRAG-01', 'PROT-SRAG-03', 'PROT-SRAG-04'] backend=mock bloqueio=False no=sugerir_conduta
+2026-07-22 02:20:42,040 | INFO | pergunta='teste' paciente=None fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=None
+2026-07-22 02:22:44,088 | INFO | pergunta='[fluxo] risco vermelho' paciente=PAC-0001 fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=emitir_alerta
+2026-07-22 02:27:17,449 | INFO | pergunta='[fluxo] risco vermelho' paciente=PAC-0001 fontes=['PROT-SRAG-01', 'PROT-SRAG-02'] backend=mock bloqueio=False no=emitir_alerta
+2026-07-22 02:27:26,652 | INFO | pergunta='[fluxo] risco vermelho' paciente=PAC-0001 fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=emitir_alerta
+2026-07-22 02:27:26,664 | INFO | pergunta='Qual a conduta recomendada para este paciente?' paciente=PAC-0002 fontes=['PROT-SRAG-01', 'PROT-SRAG-03', 'PROT-SRAG-04'] backend=mock bloqueio=False no=sugerir_conduta
+2026-07-22 02:27:26,668 | INFO | pergunta='teste' paciente=None fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=None
+2026-07-22 23:13:10,686 | INFO | pergunta='[fluxo] risco vermelho' paciente=PAC-0001 fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=emitir_alerta
+2026-07-22 23:13:10,806 | INFO | pergunta='Qual a conduta recomendada para este paciente?' paciente=PAC-0002 fontes=['PROT-SRAG-01', 'PROT-SRAG-03', 'PROT-SRAG-04'] backend=mock bloqueio=False no=sugerir_conduta
+2026-07-22 23:13:10,818 | INFO | pergunta='teste' paciente=None fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=None
+2026-07-22 23:15:09,899 | INFO | pergunta='[fluxo] risco vermelho' paciente=PAC-0001 fontes=['PROT-SRAG-01', 'PROT-SRAG-02'] backend=mock bloqueio=False no=emitir_alerta
+2026-07-22 23:15:33,057 | INFO | pergunta='[fluxo] risco vermelho' paciente=PAC-0001 fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=emitir_alerta
+2026-07-22 23:15:38,844 | INFO | pergunta='[fluxo] risco vermelho' paciente=PAC-0001 fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=emitir_alerta
+2026-07-22 23:15:38,916 | INFO | pergunta='Qual a conduta recomendada para este paciente?' paciente=PAC-0002 fontes=['PROT-SRAG-01', 'PROT-SRAG-03', 'PROT-SRAG-04'] backend=mock bloqueio=False no=sugerir_conduta
+2026-07-22 23:15:38,921 | INFO | pergunta='teste' paciente=None fontes=['PROT-SRAG-01'] backend=mock bloqueio=False no=None

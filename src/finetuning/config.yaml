@@ -1,0 +1,68 @@
+# config.yaml
+# ----------------------------------------------------------------------------
+# Hiperparâmetros do fine-tuning LoRA do assistente médico (Fase 3).
+# Editável via CLI (--override chave=valor) sem precisar mexer no código.
+# ----------------------------------------------------------------------------
+
+# Modelo base. Qualquer causal-LM do Hugging Face Hub funciona; os três
+# citados no desafio (LLaMA / Falcon / outro) estão pré-configurados como
+# alternativas — troque `active` para trocar de modelo sem editar o script.
+base_models:
+  llama3_1_8b: "meta-llama/Llama-3.1-8B-Instruct"   # requer aceite de licença no HF Hub
+  falcon_7b: "tiiuae/falcon-7b-instruct"             # aberto, sem gate de licença
+  mistral_7b: "mistralai/Mistral-7B-Instruct-v0.3"   # alternativa leve e popular
+active: falcon_7b
+
+# Quantização para caber em GPUs de 16-24GB (T4/L4/A10 do Colab).
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_use_double_quant: true
+
+# LoRA / PEFT
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  # Módulos alvo genéricos que cobrem a maioria dos LLMs decoder-only
+  # (attention q/k/v/o + MLP). Ajuste conforme a arquitetura do modelo ativo.
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+    - "gate_proj"
+    - "up_proj"
+    - "down_proj"
+
+# Treino
+training:
+  output_dir: "results/finetuned_model"
+  num_train_epochs: 3
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 8
+  learning_rate: 0.0002
+  lr_scheduler_type: "cosine"
+  warmup_ratio: 0.03
+  weight_decay: 0.01
+  max_seq_length: 1024
+  logging_steps: 10
+  eval_strategy: "steps"
+  eval_steps: 100
+  save_strategy: "steps"
+  save_steps: 100
+  save_total_limit: 2
+  bf16: true
+  gradient_checkpointing: true
+  seed: 42
+  report_to: "none"   # troque para "wandb"/"tensorboard" se desejar
+
+# Dados
+data:
+  train_path: "data/finetuning/processed/train.jsonl"
+  val_path: "data/finetuning/processed/val.jsonl"
+  test_path: "data/finetuning/processed/test.jsonl"

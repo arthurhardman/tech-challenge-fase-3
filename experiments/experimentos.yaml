@@ -1,0 +1,48 @@
+# Configurações dos experimentos de Algoritmo Genético — Fase 2 (Projeto 1)
+# Otimização de hiperparâmetros do XGBoost (modelo tabular principal da Fase 1).
+#
+# Estratégia de desempenho:
+#   - O AG avalia o fitness sobre uma AMOSTRA estratificada do treino (fitness_sample_size)
+#     para manter o custo tratável (cada indivíduo treina um XGBoost com CV).
+#   - O melhor indivíduo de cada experimento é RETREINADO no treino completo antes da
+#     avaliação final no conjunto de teste.
+#
+# Métrica de fitness: F1 (equilibra precisão e recall na classe minoritária = Óbito).
+
+defaults:
+  metric: f1
+  cv_folds: 3
+  fitness_sample_size: 30000   # nº de linhas (estratificadas) usadas na busca do AG
+  n_jobs: -1                   # paralelização da avaliação da população (joblib)
+  random_state: 42
+
+experiments:
+  - name: exp_A
+    descricao: "Baseline leve/rápido"
+    population_size: 10
+    generations: 8
+    crossover_rate: 0.8
+    mutation_rate: 0.10
+    mutation_sigma: 0.15
+    tournament_k: 3
+    elitism_size: 1
+
+  - name: exp_B
+    descricao: "Mais exploração, mutação baixa"
+    population_size: 20
+    generations: 10
+    crossover_rate: 0.9
+    mutation_rate: 0.05
+    mutation_sigma: 0.12
+    tournament_k: 3
+    elitism_size: 2
+
+  - name: exp_C
+    descricao: "População maior, mutação alta"
+    population_size: 30
+    generations: 12
+    crossover_rate: 0.8
+    mutation_rate: 0.20
+    mutation_sigma: 0.20
+    tournament_k: 4
+    elitism_size: 2
