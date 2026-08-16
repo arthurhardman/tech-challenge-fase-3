@@ -1,74 +1,103 @@
 # Plano — Tech Challenge Fase 3
 
-**FIAP Pós-Tech — Machine Learning Engineering**
-**Tema:** Assistente virtual médico com fine-tuning de LLM + fluxos de decisão com LangChain/LangGraph
-**Repositório:** `ml-tech` (continuação das Fases 1 e 2)
+**FIAP Pós-Tech — Machine Learning Engineering**  
+**Tema:** Assistente médico com fine-tuning, LangChain e LangGraph  
+**Domínio:** SRAG / SIVEP-Gripe
 
 ---
 
 ## 1. Objetivo
 
-Construir um **assistente virtual médico** treinado com dados internos do
-"hospital" e organizar **fluxos de decisão automatizados e seguros** com
-LangChain/LangGraph. Mantemos o domínio das fases anteriores — **SRAG**
-(Síndrome Respiratória Aguda Grave) — de modo que o projeto seja coeso: o mesmo
-hospital que classificou desfechos (Fase 1) e otimizou modelos com AG + LLM
-explicativa (Fase 2) agora ganha um assistente clínico sobre seus protocolos.
+A Fase 3 continua o projeto das fases anteriores no mesmo domínio de SRAG. A ideia é ter um assistente que consiga consultar protocolos, usar dados estruturados do paciente, explicar de onde veio a informação e executar um fluxo de triagem com validação humana.
 
-## 2. Requisitos do enunciado × como atendemos
+O projeto não tenta substituir o médico. Pedidos de prescrição/dose são bloqueados e as respostas sempre deixam explícita a necessidade de validação profissional.
 
-| # | Requisito | Como é atendido | Onde |
-|---|-----------|-----------------|------|
-| 1 | Fine-tuning com protocolos, FAQ e modelos de laudos/receitas | Dataset de *instruction tuning* montado das 3 fontes; LoRA/PEFT (modo real) + laço demo offline | `src/assistant/finetuning/` |
-| 1 | Preprocessing, anonimização e curadoria | `data_prep.py`: regex de PII (CPF, CNS, telefone, e-mail…), normalização, dedupe | `finetuning/data_prep.py` |
-| 2 | Pipeline LangChain integrando a LLM customizada | `CustomMedicalLLM` (wrapper do cliente Ollama/mock/fine-tuned) + chain | `chains/llm_backend.py`, `chains/medical_assistant.py` |
-| 2 | Consulta a base estruturada (prontuários) | `PatientDB` sobre `prontuarios.json` (sintético/anonimizado) | `knowledge/patient_db.py` |
-| 2 | Contextualização com dados do paciente | Resumo clínico injetado no prompt | `medical_assistant.py` |
-| 3 | Limites (nunca prescrever sem validação) | Guardrails de entrada/saída | `safety/guardrails.py` |
-| 3 | Logging detalhado para auditoria | `AuditLogger` (texto + JSONL) | `safety/audit_log.py` |
-| 3 | Explainability (indicar a fonte) | RAG TF-IDF que retorna o protocolo de origem; fontes na resposta | `knowledge/retriever.py` |
-| — | Fluxos do LangGraph | `FluxoAtendimento` (triagem → exames → alerta/conduta → consolidar) | `chains/graph.py` |
-| 4 | Código modular + README | Pacote `src/assistant/` + seção no README | — |
+## 2. Como os requisitos são atendidos
 
-## 3. Decisões de escopo (explícitas para avaliação)
+| Requisito | Implementação |
+|---|---|
+| Fine-tuning de LLM | `src/finetuning/train_lora.py` com LoRA/PEFT sobre Falcon/LLaMA/Mistral |
+| Validação de treino sem GPU | `src/finetuning/local_validation.py`, Transformer pequeno treinado de verdade em CPU |
+| Protocolos/FAQ/documentos | protocolos oficiais SRAG + 100 Q&As curados + poucos exemplos sintéticos de formatos internos |
+| PubMedQA e MedQuAD | entram no dataset de fine-tuning e também no RAG |
+| Preprocessing/anonimização | `src/finetuning/dataset_prep.py` + seleção de campos no adaptador SIVEP |
+| Dados estruturados | `PatientDB` sobre SQLite com amostra real anonimizada do SIVEP |
+| Base completa | adaptador aceita os CSVs anuais do OpenDataSUS sem carregar todos os anos juntos na memória |
+| LangChain | `MedicalAssistant` + backend compatível com LangChain |
+| LangGraph | fluxo triagem → exames → alerta/conduta → consolidação |
+| Segurança | guardrails de entrada e saída, inclusive remoção de instruções de dose |
+| Logging/auditoria | `AuditLogger` com pergunta, paciente, backend, fontes e decisão dos guardrails |
+| Explainability | RAG retorna arquivo, página, `chunk_id` e score quando disponíveis |
 
-1. **Domínio mantido (SRAG).** Coerência com as Fases 1–2. Os protocolos, FAQ e
-   prontuários são sobre SRAG.
-2. **Dados híbridos: hospital sintético (PT) + PubMedQA/MedQuAD (EN).** Os
-   protocolos, FAQ e prontuários do hospital são sintéticos e anonimizados
-   (nenhum dado real). Os datasets sugeridos entram como dados complementares.
-   As funções de anonimização são reais e aplicáveis a produção.
-3. **Fine-tuning: código real (LoRA/PEFT) + modo demo offline.** Espelha a
-   filosofia da Fase 2 (Ollama ↔ mock): o modo `real` roda em GPU com um
-   modelo-base do Hugging Face; o modo `demo` (padrão) executa todo o pipeline
-   de dados e um laço de treino simulado que produz artefatos reais (curva de
-   perda, métricas), garantindo reprodutibilidade na máquina do avaliador.
-4. **RAG leve com TF-IDF** (scikit-learn), em vez de vetor store pesado —
-   controla a explainability (retorna a fonte) e roda sem rede/GPU.
-5. **Backend da LLM plugável.** As chains não dependem do backend: hoje
-   Ollama/mock; amanhã a LLM fine-tuned, sem alterar o código do assistente.
+## 3. Dados usados
 
-## 4. Datasets sugeridos (PubMedQA / MedQuAD) — integrados
+### Pacientes
 
-Adotamos a **abordagem híbrida**: os dados internos do hospital (SRAG, PT-BR)
-são combinados com os dois datasets sugeridos, no fine-tuning e no RAG.
+O repositório acompanha uma amostra de **8.000 registros reais anonimizados do SIVEP**, distribuída entre 2023, 2024, 2025 e 2026. Ela é convertida para SQLite durante a execução.
 
-- **PubMedQA** (Jin et al., 2019, licença MIT) — 250 exemplos da fatia curada do
-  subconjunto rotulado; entram no fine-tuning.
-- **MedQuAD** (Ben Abacha & Demner-Fushman, 2019, licença CC BY 4.0) — 350
-  exemplos dos 9 subconjuntos do NIH com resposta; entram no fine-tuning **e** no
-  RAG como base de referência complementar (com citação de fonte).
+O adaptador também foi validado com os quatro arquivos anuais completos usados pelo grupo, totalizando **1.071.699 registros**.
 
-Loaders em `finetuning/external_datasets.py`; download em `scripts/fetch_datasets.py`;
-citações em `data/knowledge_base/external/CITATIONS.md`. Os dados do hospital
-atendem ao requisito literal ("dados próprios do hospital") e os datasets à
-sugestão — cobrindo os dois.
+### Conhecimento textual
 
-## 5. Entregáveis
+O RAG combina:
 
-- Código (fine-tuning + LangChain + LangGraph) em `src/assistant/`
-- Base sintética anonimizada em `data/knowledge_base/`
-- Notebook `notebooks/08_finetuning_langchain.ipynb`
-- Relatório técnico `docs/relatorio_fase3.md` + diagrama `results/figures/fluxo_langchain.png`
-- Testes `tests/test_finetuning.py`, `tests/test_assistant.py`
-- Roteiro do vídeo `docs/roteiro_video_fase3.md`
+- protocolos originais do projeto;
+- 5 documentos oficiais relacionados a SRAG/vigilância;
+- 857 chunks com arquivo e página;
+- PubMedQA;
+- MedQuAD.
+
+Para o domínio SRAG existem ainda **100 perguntas/respostas curadas**, com 20 perguntas separadas para avaliação.
+
+## 4. Fine-tuning
+
+O dataset principal fica em `src/finetuning/` e combina:
+
+- 1.500 exemplos MedQuAD;
+- 1.000 PubMedQA;
+- 100 exemplos oficiais de SRAG;
+- 6 exemplos sintéticos de formatos internos.
+
+Após deduplicação são **2.587 exemplos únicos**. O caminho de entrega usa LoRA/PEFT. Como esse treino depende de GPU, existe também um Transformer pequeno para validar em CPU, sem simular loss, o fluxo completo de treino/checkpoint/inferência.
+
+## 5. Fluxo do assistente
+
+```text
+pergunta
+   ↓
+guardrail de entrada
+   ↓
+RAG + dados do paciente
+   ↓
+backend ajustado / Ollama / checkpoint local
+   ↓
+guardrail de saída
+   ↓
+resposta + fontes + auditoria
+```
+
+O LangGraph organiza a etapa operacional:
+
+```text
+triagem → verificar_exames → emitir_alerta | sugerir_conduta → consolidar
+```
+
+## 6. Avaliação esperada
+
+A avaliação usa as 20 perguntas SRAG que não entram no treino e mede:
+
+- recuperação da fonte correta;
+- recuperação de fonte + página;
+- presença do aviso de validação médica;
+- bloqueio de prescrição;
+- recuperação de MedQuAD e PubMedQA em testes de sanidade.
+
+## 7. Entregáveis
+
+- código modular em `src/assistant/` e `src/finetuning/`;
+- amostra SIVEP anonimizada em `data/knowledge_base/sivep/`;
+- protocolos/fontes em `data/knowledge_base/official/`;
+- notebook `notebooks/08_finetuning_langchain.ipynb`;
+- relatório `docs/relatorio_fase3.md`;
+- diagrama em `results/figures/fluxo_langchain.png`;
+- testes automatizados em `tests/`.

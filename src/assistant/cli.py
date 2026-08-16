@@ -54,17 +54,18 @@ def _cmd_fluxo(args) -> None:
 
 def _cmd_pacientes(_args) -> None:
     db = PatientDB()
-    ids = db.todos_ids()
+    ids = db.todos_ids(limit=15)
     if not ids:
-        print("Base de pacientes vazia. Rode: python scripts/gen_synthetic_data.py")
+        print("Base de pacientes vazia. Rode run_fase3.py ou informe --sivep.")
         return
-    print(f"{len(ids)} pacientes sintéticos:")
-    for pid in ids[:15]:
-        reg = db.get(pid)
-        print(f"  {pid} | risco={reg['classificacao_risco']:8} | SpO2={reg['spo2']}% "
-              f"| pendentes={db.exames_pendentes(pid) or '—'}")
-    if len(ids) > 15:
-        print(f"  … e mais {len(ids) - 15}.")
+    print(f"Base: {db.backend} | total: {db.count():,}")
+    for pid in ids:
+        reg = db.get(pid) or {}
+        print(
+            f"  {pid} | risco={reg.get('classificacao_risco', 'n/d'):8} "
+            f"| ano={reg.get('ano_fonte', 'n/d')} "
+            f"| pendentes={db.exames_pendentes(pid) or '—'}"
+        )
 
 
 def main() -> None:
@@ -81,7 +82,7 @@ def main() -> None:
     p2.add_argument("--pergunta", default=None, help="Pergunta opcional para o fluxo.")
     p2.set_defaults(func=_cmd_fluxo)
 
-    p3 = sub.add_parser("pacientes", help="Lista pacientes sintéticos.")
+    p3 = sub.add_parser("pacientes", help="Lista pacientes disponíveis na base estruturada.")
     p3.set_defaults(func=_cmd_pacientes)
 
     args = ap.parse_args()

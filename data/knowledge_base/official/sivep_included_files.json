@@ -1,0 +1,56 @@
+{
+  "source": "OpenDataSUS — Ministério da Saúde",
+  "dataset": "Banco de dados da Síndrome Respiratória Aguda Grave (SRAG) - 2019 a 2026",
+  "generated_at": "2026-08-15",
+  "included_years": [
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "raw_rows_total": 1071699,
+  "valid_rows_total": 945239,
+  "processed_fields": 39,
+  "files": [
+    {
+      "year": 2023,
+      "filename": "INFLUD23-23-03-2026.csv",
+      "bytes": 316216304,
+      "raw_rows": 279453,
+      "valid_rows_in_phase3": 251083,
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/0d78ff63-d6ca-4311-8dc8-6123cf1ca127",
+      "download_url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2023/INFLUD23-23-03-2026.csv",
+      "sha256": "639b748fb2838336bbaf0882608159790274734b21abdb02b303ee6076bb5e4a"
+    },
+    {
+      "year": 2024,
+      "filename": "INFLUD24-26-06-2025.csv",
+      "bytes": 264769650,
+      "raw_rows": 267984,
+      "valid_rows_in_phase3": 240420,
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026",
+      "download_url": null,
+      "sha256": "03ed2ca3304ea5d311a5c6805d6562008469730c0ab92cf084e205d209a1d47d"
+    },
+    {
+      "year": 2025,
+      "filename": "INFLUD25-10-08-2026.csv",
+      "bytes": 381798142,
+      "raw_rows": 336181,
+      "valid_rows_in_phase3": 305352,
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/20c49de3-ddc3-4b76-a942-1518eaae9c91",
+      "download_url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2025/INFLUD25-10-08-2026.csv",
+      "sha256": "42347383349088589e0eb216273063f8f097578e070ff9d13867ff203180f949"
+    },
+    {
+      "year": 2026,
+      "filename": "INFLUD26-10-08-2026.csv",
+      "bytes": 209826978,
+      "raw_rows": 188081,
+      "valid_rows_in_phase3": 148384,
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/74091efc-3f75-42e8-a6fa-6b79a8d30582",
+      "download_url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2026/INFLUD26-10-08-2026.csv",
+      "sha256": "16a90792b264abc0be1c16fb19583957d5dbcef6ba89df8b01e655058587e807"
+    }
+  ]
+}

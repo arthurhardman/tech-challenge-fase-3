@@ -1,0 +1,3 @@
+# Dependência adicional para a validação REAL em CPU da Fase 3.
+# O fine-tuning LoRA em GPU continua usando requirements-finetuning.txt.
+torch>=2.3,<3

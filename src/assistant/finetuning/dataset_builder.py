@@ -99,6 +99,27 @@ def _exemplos_de_protocolos(diretorio: Path) -> List[Dict]:
     return exemplos
 
 
+def _exemplos_oficiais(path: Path) -> List[Dict]:
+    """Carrega as perguntas curadas dos protocolos oficiais com página de origem."""
+    exemplos = []
+    if not path.exists():
+        return exemplos
+    for linha in path.read_text(encoding="utf-8").splitlines():
+        if not linha.strip():
+            continue
+        item = json.loads(linha)
+        fonte = item.get("source", "protocolo_oficial")
+        page = item.get("page")
+        exemplos.append({
+            "prompt": item.get("question", ""),
+            "response": item.get("answer", ""),
+            "origem": "protocolo_oficial",
+            "fonte": f"{fonte}, p. {page}" if page is not None else fonte,
+            "idioma": "pt",
+        })
+    return exemplos
+
+
 def build_dataset(salvar: bool = True, incluir_externos: bool = True) -> List[Dict]:
     """
     Constrói o dataset completo (curado + anonimizado) e opcionalmente salva em
@@ -112,6 +133,7 @@ def build_dataset(salvar: bool = True, incluir_externos: bool = True) -> List[Di
         _exemplos_de_faq(config.FAQ_PATH)
         + _exemplos_de_laudos(config.LAUDOS_PATH)
         + _exemplos_de_protocolos(config.PROTOCOLOS_DIR)
+        + _exemplos_oficiais(config.OFFICIAL_FAQ_PATH)
     )
     curados = curar_exemplos(brutos)
 

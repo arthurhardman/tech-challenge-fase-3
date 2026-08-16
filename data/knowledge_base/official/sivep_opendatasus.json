@@ -1,0 +1,65 @@
+{
+  "dataset": "Banco de dados da Síndrome Respiratória Aguda Grave (SRAG) - 2019 a 2026",
+  "portal": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026",
+  "last_checked": "2026-08-15",
+  "notes": "Fontes oficiais do OpenDataSUS. O ZIP inclui os CSVs usados nesta validação para 2023, 2024, 2025 e 2026; o manifesto mantém recursos anuais de 2019 a 2026 para expansão.",
+  "resources": [
+    {
+      "year": 2019,
+      "format": "parquet",
+      "filename": "INFLUD19-23-03-2026.parquet",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2019/INFLUD19-23-03-2026.parquet",
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/53854458-36a9-447f-a8d4-6836396fea30"
+    },
+    {
+      "year": 2020,
+      "format": "parquet",
+      "filename": "INFLUD20-23-03-2026.parquet",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2020/INFLUD20-23-03-2026.parquet",
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/a29de31f-db28-43fc-92fd-f45bea2d39ee"
+    },
+    {
+      "year": 2021,
+      "format": "parquet",
+      "filename": "INFLUD21-23-03-2026.parquet",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2021/INFLUD21-23-03-2026.parquet",
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/b2adb027-6397-44e0-9557-e72b82e7b9c0"
+    },
+    {
+      "year": 2022,
+      "format": "parquet",
+      "filename": "INFLUD22-23-03-2026.parquet",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2022/INFLUD22-23-03-2026.parquet",
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/9410b844-f321-47c3-8136-0043c341b68b"
+    },
+    {
+      "year": 2023,
+      "format": "parquet",
+      "filename": "INFLUD23-23-03-2026.parquet",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2023/INFLUD23-23-03-2026.parquet",
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/795704b2-05bb-412b-a105-d44ff16353c0"
+    },
+    {
+      "year": 2024,
+      "format": "parquet",
+      "filename": "INFLUD24-23-03-2026.parquet",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2024/INFLUD24-23-03-2026.parquet",
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/8cb52f73-0184-41d5-8a8f-87d8f415652c"
+    },
+    {
+      "year": 2025,
+      "format": "parquet",
+      "filename": "INFLUD25-10-08-2026.parquet",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2025/INFLUD25-10-08-2026.parquet",
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/66d478cf-1b6c-4bdb-a069-5b5fc4caeb2e"
+    },
+    {
+      "year": 2026,
+      "format": "parquet",
+      "filename": "INFLUD26-10-08-2026.parquet",
+      "url": "https://s3.sa-east-1.amazonaws.com/ckan.saude.gov.br/SRAG/2026/INFLUD26-10-08-2026.parquet",
+      "resource_page": "https://dadosabertos.saude.gov.br/dataset/srag-2019-a-2026/resource/d3f164bd-0a1d-43eb-9410-357ad410d49c"
+    }
+  ],
+  "included_files_manifest": "data/fase3/sources/sivep_included_files.json"
+}

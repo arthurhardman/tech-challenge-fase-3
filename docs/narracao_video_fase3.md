@@ -1,3 +1,5 @@
+> **Nota:** este arquivo veio da primeira versão da Fase 3. Para a gravação atual, use `docs/roteiro_video_fase3.md`, que já considera SIVEP real, protocolos oficiais, treino local real e o pipeline LoRA atual.
+
 # Narração do Vídeo — Fase 3 (minuto a minuto)
 
 **Como usar:** cada bloco tem **[TELA]** (o que mostrar/fazer) e **[FALA]** (o

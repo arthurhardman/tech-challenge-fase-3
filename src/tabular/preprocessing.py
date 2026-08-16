@@ -299,15 +299,29 @@ def executar_pipeline_preprocessamento(df: pd.DataFrame, salvar: bool = True) ->
 
     if salvar:
         PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-        X_train.to_parquet(PROCESSED_DIR / "X_train.parquet")
-        X_val.to_parquet(PROCESSED_DIR / "X_val.parquet")
-        X_test.to_parquet(PROCESSED_DIR / "X_test.parquet")
-        y_train.to_frame().to_parquet(PROCESSED_DIR / "y_train.parquet")
-        y_val.to_frame().to_parquet(PROCESSED_DIR / "y_val.parquet")
-        y_test.to_frame().to_parquet(PROCESSED_DIR / "y_test.parquet")
+
+        # Parquet continua sendo o formato padrão do projeto. O fallback para CSV
+        # só é usado quando o ambiente não tem pyarrow/fastparquet instalado.
+        try:
+            X_train.to_parquet(PROCESSED_DIR / "X_train.parquet")
+            X_val.to_parquet(PROCESSED_DIR / "X_val.parquet")
+            X_test.to_parquet(PROCESSED_DIR / "X_test.parquet")
+            y_train.to_frame().to_parquet(PROCESSED_DIR / "y_train.parquet")
+            y_val.to_frame().to_parquet(PROCESSED_DIR / "y_val.parquet")
+            y_test.to_frame().to_parquet(PROCESSED_DIR / "y_test.parquet")
+            formato_dados = "parquet"
+        except ImportError:
+            X_train.to_csv(PROCESSED_DIR / "X_train.csv", index=False)
+            X_val.to_csv(PROCESSED_DIR / "X_val.csv", index=False)
+            X_test.to_csv(PROCESSED_DIR / "X_test.csv", index=False)
+            y_train.to_frame().to_csv(PROCESSED_DIR / "y_train.csv", index=False)
+            y_val.to_frame().to_csv(PROCESSED_DIR / "y_val.csv", index=False)
+            y_test.to_frame().to_csv(PROCESSED_DIR / "y_test.csv", index=False)
+            formato_dados = "csv (fallback sem pyarrow/fastparquet)"
+
         joblib.dump(scaler, PROCESSED_DIR / "scaler.pkl")
         joblib.dump(encoders, PROCESSED_DIR / "encoders.pkl")
         joblib.dump(imputers, PROCESSED_DIR / "imputers.pkl")
-        print(f"Artefatos salvos em: {PROCESSED_DIR}")
+        print(f"Artefatos salvos em: {PROCESSED_DIR} [{formato_dados}]")
 
     return artefatos

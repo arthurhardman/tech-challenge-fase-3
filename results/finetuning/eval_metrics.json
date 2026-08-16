@@ -1,122 +1,295 @@
 {
-  "n_perguntas_gold": 10,
-  "acuracia_fonte": 1.0,
-  "cobertura_termos_media": 0.585,
+  "n_perguntas_gold": 20,
+  "source_recall_at_k": 0.8,
+  "source_page_recall_at_k": 0.7,
   "taxa_disclaimer": 1.0,
   "taxa_bloqueio_prescricao": 1.0,
-  "backend": "mock",
+  "backend": "finetuned-local",
   "composicao_dataset_finetuning": {
     "faq": 10,
     "modelo_laudo": 1,
     "modelo_receita": 1,
     "modelo_procedimento": 1,
     "protocolo": 14,
+    "protocolo_oficial": 100,
     "pubmedqa": 250,
     "medquad": 350
   },
   "retrieval_hit_medquad": 1.0,
+  "retrieval_hit_pubmedqa": 1.0,
   "detalhes": [
     {
-      "pergunta": "Qual o alvo de saturação para paciente com SRAG em oxigenoterapia?",
-      "fonte_esperada": "PROT-SRAG-02",
+      "pergunta": "O que caracteriza uma síndrome gripal suspeita de covid-19?",
+      "fonte_esperada": "guia_srag_ministerio_saude_2025.pdf",
+      "pagina_esperada": 4,
       "fontes_recuperadas": [
-        "PROT-SRAG-01",
-        "PROT-SRAG-02",
-        "PROT-SRAG-04"
+        "guia_srag_ministerio_saude_2025.pdf, p. 3",
+        "guia_srag_ministerio_saude_2025.pdf, p. 4",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 33",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 122",
+        "guia_srag_ministerio_saude_2025.pdf, p. 2"
       ],
       "fonte_ok": true,
-      "cobertura_termos": 0.778
+      "pagina_ok": true
     },
     {
-      "pergunta": "Quando devo considerar transferência para UTI?",
-      "fonte_esperada": "PROT-SRAG-02",
+      "pergunta": "O que fazer quando um paciente com síndrome gripal apresenta fatores de risco para complicações?",
+      "fonte_esperada": "guia_srag_ministerio_saude_2025.pdf",
+      "pagina_esperada": 5,
       "fontes_recuperadas": [
-        "PROT-SRAG-01",
-        "PROT-SRAG-02"
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 9",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 91",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 90",
+        "guia_srag_ministerio_saude_2025.pdf, p. 3",
+        "guia_srag_ministerio_saude_2025.pdf, p. 5"
       ],
       "fonte_ok": true,
-      "cobertura_termos": 0.929
+      "pagina_ok": true
     },
     {
-      "pergunta": "Como classifico o risco de um paciente na admissão?",
-      "fonte_esperada": "PROT-SRAG-01",
+      "pergunta": "Qual sistema deve receber a notificação de casos hospitalizados de SRAG?",
+      "fonte_esperada": "guia_srag_ministerio_saude_2025.pdf",
+      "pagina_esperada": 2,
       "fontes_recuperadas": [
-        "PROT-SRAG-01"
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 38",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 37",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 13",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 39",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 105"
       ],
-      "fonte_ok": true,
-      "cobertura_termos": 0.333
+      "fonte_ok": false,
+      "pagina_ok": false
     },
     {
-      "pergunta": "Quais exames pedir na admissão de um caso de SRAG?",
-      "fonte_esperada": "PROT-SRAG-01",
+      "pergunta": "Em que momento do atendimento devem ser aplicadas medidas de prevenção e controle?",
+      "fonte_esperada": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf",
+      "pagina_esperada": 4,
       "fontes_recuperadas": [
-        "PROT-SRAG-01",
-        "PROT-SRAG-04"
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 9",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 41",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 49",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 8",
+        "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf, p. 4"
       ],
       "fonte_ok": true,
-      "cobertura_termos": 0.8
+      "pagina_ok": true
     },
     {
-      "pergunta": "Posso iniciar antibiótico empírico em todo paciente com SRAG?",
-      "fonte_esperada": "PROT-SRAG-03",
+      "pergunta": "Quando as amostras respiratórias devem ser coletadas para detecção viral?",
+      "fonte_esperada": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf",
+      "pagina_esperada": 6,
       "fontes_recuperadas": [
-        "PROT-SRAG-01",
-        "PROT-SRAG-03"
+        "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf, p. 6",
+        "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf, p. 1",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 34",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 144",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 88"
       ],
       "fonte_ok": true,
-      "cobertura_termos": 0.167
+      "pagina_ok": true
     },
     {
-      "pergunta": "Quando o paciente pode receber alta?",
-      "fonte_esperada": "PROT-SRAG-04",
+      "pergunta": "Um teste rápido sorológico negativo para covid-19 exclui o diagnóstico?",
+      "fonte_esperada": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf",
+      "pagina_esperada": 8,
       "fontes_recuperadas": [
-        "PROT-SRAG-01",
-        "PROT-SRAG-03",
-        "PROT-SRAG-04"
+        "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf, p. 8",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 35",
+        "dicionario_sivep_2019_2025.pdf, p. 23",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 69"
       ],
       "fonte_ok": true,
-      "cobertura_termos": 0.222
+      "pagina_ok": true
     },
     {
-      "pergunta": "Quais os sinais de alerta para reavaliação imediata?",
-      "fonte_esperada": "PROT-SRAG-01",
+      "pergunta": "Que campos podem compor um modelo de registro de triagem para síndrome respiratória?",
+      "fonte_esperada": "guia_srag_ministerio_saude_2025.pdf",
+      "pagina_esperada": 4,
       "fontes_recuperadas": [
-        "PROT-SRAG-01",
-        "PROT-SRAG-02"
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 38",
+        "ficha_notificacao_srag_2025.pdf, p. 1",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 39",
+        "dicionario_sivep_2019_2025.pdf, p. 1",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 72"
       ],
-      "fonte_ok": true,
-      "cobertura_termos": 0.818
+      "fonte_ok": false,
+      "pagina_ok": false
     },
     {
-      "pergunta": "Como escalonar o suporte de oxigênio?",
-      "fonte_esperada": "PROT-SRAG-02",
+      "pergunta": "Quais sinais de gravidade devem ser observados em uma síndrome gripal suspeita de covid-19?",
+      "fonte_esperada": "guia_srag_ministerio_saude_2025.pdf",
+      "pagina_esperada": 2,
       "fontes_recuperadas": [
-        "PROT-SRAG-01",
-        "PROT-SRAG-02",
-        "PROT-SRAG-04"
+        "guia_srag_ministerio_saude_2025.pdf, p. 3",
+        "guia_srag_ministerio_saude_2025.pdf, p. 2",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 33",
+        "guia_srag_ministerio_saude_2025.pdf, p. 4",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 122"
       ],
       "fonte_ok": true,
-      "cobertura_termos": 0.154
+      "pagina_ok": true
     },
     {
-      "pergunta": "O assistente virtual pode prescrever medicação?",
-      "fonte_esperada": "PROT-SRAG-03",
+      "pergunta": "Que tipo de amostra deve ser coletada em pacientes hospitalizados com SRAG?",
+      "fonte_esperada": "guia_srag_ministerio_saude_2025.pdf",
+      "pagina_esperada": 5,
       "fontes_recuperadas": [
-        "PROT-SRAG-03"
+        "dicionario_sivep_2019_2025.pdf, p. 23",
+        "dicionario_sivep_2019_2025.pdf, p. 18",
+        "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf, p. 6"
       ],
-      "fonte_ok": true,
-      "cobertura_termos": 0.867
+      "fonte_ok": false,
+      "pagina_ok": false
     },
     {
-      "pergunta": "Preciso avaliar profilaxia de trombose em quem interna por SRAG?",
-      "fonte_esperada": "PROT-SRAG-03",
+      "pergunta": "Como o guia de vigilância integrada resume a definição de SRAG hospitalizado?",
+      "fonte_esperada": "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf",
+      "pagina_esperada": 17,
       "fontes_recuperadas": [
-        "PROT-SRAG-01",
-        "PROT-SRAG-03",
-        "PROT-SRAG-04"
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 1",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 13",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 12",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 104",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 2"
       ],
       "fonte_ok": true,
-      "cobertura_termos": 0.778
+      "pagina_ok": false
+    },
+    {
+      "pergunta": "O que representa o campo NU_IDADE_N no SIVEP-Gripe?",
+      "fonte_esperada": "dicionario_sivep_2019_2025.pdf",
+      "pagina_esperada": 4,
+      "fontes_recuperadas": [
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 39",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 38",
+        "ficha_notificacao_srag_2025.pdf, p. 1",
+        "guia_srag_ministerio_saude_2025.pdf, p. 2",
+        "dicionario_sivep_2019_2025.pdf, p. 4"
+      ],
+      "fonte_ok": true,
+      "pagina_ok": true
+    },
+    {
+      "pergunta": "Que informações de imagem aparecem na ficha de notificação de SRAG?",
+      "fonte_esperada": "ficha_notificacao_srag_2025.pdf",
+      "pagina_esperada": 2,
+      "fontes_recuperadas": [
+        "dicionario_sivep_2019_2025.pdf, p. 1",
+        "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf, p. 7",
+        "ficha_notificacao_srag_2025.pdf, p. 1",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 36",
+        "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf, p. 6"
+      ],
+      "fonte_ok": true,
+      "pagina_ok": false
+    },
+    {
+      "pergunta": "Como a vacinação contra covid-19 aparece no dicionário do SIVEP?",
+      "fonte_esperada": "dicionario_sivep_2019_2025.pdf",
+      "pagina_esperada": 10,
+      "fontes_recuperadas": [
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 135",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 44",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 134",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 43",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 80"
+      ],
+      "fonte_ok": false,
+      "pagina_ok": false
+    },
+    {
+      "pergunta": "Qual é a temporalidade de notificação da SRAG por covid-19 no quadro de vigilância integrada?",
+      "fonte_esperada": "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf",
+      "pagina_esperada": 17,
+      "fontes_recuperadas": [
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 17",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 38",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 39",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 12",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 16"
+      ],
+      "fonte_ok": true,
+      "pagina_ok": true
+    },
+    {
+      "pergunta": "O que o campo DT_SIN_PRI representa no SIVEP-Gripe?",
+      "fonte_esperada": "dicionario_sivep_2019_2025.pdf",
+      "pagina_esperada": 2,
+      "fontes_recuperadas": [
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 39",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 38",
+        "ficha_notificacao_srag_2025.pdf, p. 1",
+        "dicionario_sivep_2019_2025.pdf, p. 2",
+        "guia_srag_ministerio_saude_2025.pdf, p. 2"
+      ],
+      "fonte_ok": true,
+      "pagina_ok": true
+    },
+    {
+      "pergunta": "O que o campo CS_ESCOL_N representa?",
+      "fonte_esperada": "dicionario_sivep_2019_2025.pdf",
+      "pagina_esperada": 5,
+      "fontes_recuperadas": [
+        "dicionario_sivep_2019_2025.pdf, p. 11",
+        "dicionario_sivep_2019_2025.pdf, p. 5",
+        "dicionario_sivep_2019_2025.pdf, p. 7",
+        "dicionario_sivep_2019_2025.pdf, p. 15",
+        "dicionario_sivep_2019_2025.pdf, p. 13"
+      ],
+      "fonte_ok": true,
+      "pagina_ok": true
+    },
+    {
+      "pergunta": "Quando o campo TP_ANTIVIR deve ser informado?",
+      "fonte_esperada": "dicionario_sivep_2019_2025.pdf",
+      "pagina_esperada": 14,
+      "fontes_recuperadas": [
+        "dicionario_sivep_2019_2025.pdf, p. 5",
+        "dicionario_sivep_2019_2025.pdf, p. 7",
+        "dicionario_sivep_2019_2025.pdf, p. 4",
+        "dicionario_sivep_2019_2025.pdf, p. 14",
+        "dicionario_sivep_2019_2025.pdf, p. 25"
+      ],
+      "fonte_ok": true,
+      "pagina_ok": true
+    },
+    {
+      "pergunta": "Como o dicionário codifica o uso de suporte ventilatório?",
+      "fonte_esperada": "dicionario_sivep_2019_2025.pdf",
+      "pagina_esperada": 17,
+      "fontes_recuperadas": [
+        "dicionario_sivep_2019_2025.pdf, p. 17",
+        "ficha_notificacao_srag_2025.pdf, p. 2",
+        "guia_srag_ministerio_saude_2025.pdf, p. 5",
+        "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 116"
+      ],
+      "fonte_ok": true,
+      "pagina_ok": true
+    },
+    {
+      "pergunta": "Quais categorias aparecem no resultado do teste antigênico?",
+      "fonte_esperada": "dicionario_sivep_2019_2025.pdf",
+      "pagina_esperada": 18,
+      "fontes_recuperadas": [
+        "dicionario_sivep_2019_2025.pdf, p. 19",
+        "dicionario_sivep_2019_2025.pdf, p. 18"
+      ],
+      "fonte_ok": true,
+      "pagina_ok": true
+    },
+    {
+      "pergunta": "O que o campo PCR_VSR representa?",
+      "fonte_esperada": "dicionario_sivep_2019_2025.pdf",
+      "pagina_esperada": 21,
+      "fontes_recuperadas": [
+        "dicionario_sivep_2019_2025.pdf, p. 11",
+        "dicionario_sivep_2019_2025.pdf, p. 21",
+        "dicionario_sivep_2019_2025.pdf, p. 7",
+        "dicionario_sivep_2019_2025.pdf, p. 15",
+        "dicionario_sivep_2019_2025.pdf, p. 13"
+      ],
+      "fonte_ok": true,
+      "pagina_ok": true
     }
   ]
 }

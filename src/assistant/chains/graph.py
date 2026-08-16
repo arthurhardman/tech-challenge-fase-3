@@ -1,39 +1,23 @@
-"""
-graph.py
---------
-Fluxo de decisão automatizado com **LangGraph** (requisito central da Fase 3).
+"""Fluxo automatizado de atendimento com LangGraph.
 
-Modela o cenário do enunciado: ao receber informações de um paciente, o sistema
-aciona etapas coordenadas — verifica exames pendentes, sugere conduta com base
-nos protocolos e emite alerta para a equipe quando há risco alto.
-
-Grafo de estados:
-
-        entrada
-           │
-      [triagem] ── carrega prontuário + classificação de risco
-           │
-   [verificar_exames] ── lista exames pendentes
-           │
-    (roteamento por risco)
-        ┌──┴───────────────┐
-     vermelho            demais
-        │                   │
-  [emitir_alerta]     [sugerir_conduta] ── assistente (RAG + guardrails)
-        │                   │
-        └────────┬──────────┘
-            [consolidar] → resumo final + auditoria
-                 │
-                END
-
-Cada nó registra um `AuditEvent`, tornando o fluxo inteiro auditável.
+O fluxo segue o exemplo do challenge: consulta o paciente, verifica exames
+pendentes, separa casos de maior risco e então gera uma orientação baseada no
+RAG. Quando LangGraph não está instalado, a classe executa a mesma sequência em
+Python puro para permitir testes locais; com a dependência instalada, o mesmo
+conjunto de nós é compilado em ``StateGraph``.
 """
 
 from __future__ import annotations
 
 from typing import List, Optional, TypedDict
 
-from langgraph.graph import StateGraph, END
+try:
+    from langgraph.graph import StateGraph, END
+    LANGGRAPH_AVAILABLE = True
+except ImportError:
+    StateGraph = None
+    END = "END"
+    LANGGRAPH_AVAILABLE = False
 
 from ..knowledge.patient_db import PatientDB
 from ..safety.audit_log import AuditLogger, AuditEvent
@@ -41,7 +25,6 @@ from .medical_assistant import MedicalAssistant
 
 
 class EstadoAtendimento(TypedDict, total=False):
-    """Estado compartilhado entre os nós do grafo."""
     paciente_id: str
     pergunta: str
     risco: str
@@ -50,13 +33,27 @@ class EstadoAtendimento(TypedDict, total=False):
     alerta: Optional[str]
     fontes: List[str]
     backend: str
-    trilha: List[str]        # sequência de nós percorridos (para explainability)
+    trilha: List[str]
     resumo_final: str
 
 
-class FluxoAtendimento:
-    """Encapsula o `StateGraph` do LangGraph e suas dependências."""
+class _PythonGraphRunner:
+    """Executa o mesmo fluxo quando LangGraph não está disponível no ambiente."""
 
+    def __init__(self, owner: "FluxoAtendimento"):
+        self.owner = owner
+
+    def invoke(self, estado: EstadoAtendimento) -> EstadoAtendimento:
+        estado = self.owner._no_triagem(estado)
+        estado = self.owner._no_verificar_exames(estado)
+        if self.owner._rota_por_risco(estado) == "emitir_alerta":
+            estado = self.owner._no_emitir_alerta(estado)
+        else:
+            estado = self.owner._no_sugerir_conduta(estado)
+        return self.owner._no_consolidar(estado)
+
+
+class FluxoAtendimento:
     def __init__(
         self,
         assistant: Optional[MedicalAssistant] = None,
@@ -68,81 +65,97 @@ class FluxoAtendimento:
         self.auditor = auditor or AuditLogger()
         self.app = self._compilar()
 
-    # ---- nós ------------------------------------------------------------- #
     def _no_triagem(self, estado: EstadoAtendimento) -> EstadoAtendimento:
         reg = self.patient_db.get(estado["paciente_id"])
-        risco = reg["classificacao_risco"] if reg else "desconhecido"
-        trilha = estado.get("trilha", []) + ["triagem"]
-        return {**estado, "risco": risco, "trilha": trilha}
+        risco = reg.get("classificacao_risco", "desconhecido") if reg else "desconhecido"
+        return {**estado, "risco": risco, "trilha": estado.get("trilha", []) + ["triagem"]}
 
     def _no_verificar_exames(self, estado: EstadoAtendimento) -> EstadoAtendimento:
         pend = self.patient_db.exames_pendentes(estado["paciente_id"])
-        trilha = estado.get("trilha", []) + ["verificar_exames"]
-        return {**estado, "exames_pendentes": pend, "trilha": trilha}
+        return {
+            **estado,
+            "exames_pendentes": pend,
+            "trilha": estado.get("trilha", []) + ["verificar_exames"],
+        }
 
     def _no_sugerir_conduta(self, estado: EstadoAtendimento) -> EstadoAtendimento:
-        pergunta = estado.get("pergunta") or "Qual a conduta recomendada para este paciente?"
+        pergunta = estado.get("pergunta") or "Quais critérios do protocolo devem ser conferidos neste caso?"
         r = self.assistant.responder(pergunta, paciente_id=estado["paciente_id"])
         trilha = estado.get("trilha", []) + ["sugerir_conduta"]
         self.auditor.registrar(AuditEvent(
-            pergunta=pergunta, resposta=r.resposta, backend_llm=r.backend,
-            paciente_id=estado["paciente_id"], fontes=r.fontes,
+            pergunta=pergunta,
+            resposta=r.resposta,
+            backend_llm=r.backend,
+            paciente_id=estado["paciente_id"],
+            fontes=r.fontes,
             guardrail_bloqueou=r.bloqueado_guardrail,
-            guardrail_categorias=r.categorias_guardrail, fluxo_no="sugerir_conduta",
+            guardrail_categorias=r.categorias_guardrail,
+            fluxo_no="sugerir_conduta",
         ))
-        return {**estado, "conduta": r.resposta, "fontes": r.fontes,
-                "backend": r.backend, "trilha": trilha}
+        return {
+            **estado,
+            "conduta": r.resposta,
+            "fontes": r.fontes,
+            "backend": r.backend,
+            "trilha": trilha,
+        }
 
     def _no_emitir_alerta(self, estado: EstadoAtendimento) -> EstadoAtendimento:
         pend = estado.get("exames_pendentes", [])
         alerta = (
-            f"🚨 ALERTA — paciente {estado['paciente_id']} classificado como RISCO "
-            f"VERMELHO. Acionar equipe de resposta rápida (PROT-SRAG-01). "
-            + (f"Exames pendentes: {', '.join(pend)}." if pend else "Exames em dia.")
+            f"🚨 ALERTA — paciente {estado['paciente_id']} classificado como risco vermelho "
+            "pelos indicadores disponíveis na base. Priorizar avaliação da equipe médica. "
+            + (f"Exames pendentes registrados: {', '.join(pend)}." if pend else "Não há exame registrado como pendente.")
         )
-        # No risco alto também geramos a sugestão de conduta.
         r = self.assistant.responder(
-            estado.get("pergunta") or "Conduta imediata para risco alto de SRAG?",
+            estado.get("pergunta") or "Quais critérios do protocolo devem ser revisados em um caso de maior risco?",
             paciente_id=estado["paciente_id"],
         )
         trilha = estado.get("trilha", []) + ["emitir_alerta"]
         self.auditor.registrar(AuditEvent(
-            pergunta="[fluxo] risco vermelho", resposta=alerta, backend_llm=r.backend,
-            paciente_id=estado["paciente_id"], fontes=r.fontes, fluxo_no="emitir_alerta",
+            pergunta="[fluxo] risco vermelho",
+            resposta=alerta,
+            backend_llm=r.backend,
+            paciente_id=estado["paciente_id"],
+            fontes=r.fontes,
+            fluxo_no="emitir_alerta",
         ))
-        return {**estado, "alerta": alerta, "conduta": r.resposta,
-                "fontes": r.fontes, "backend": r.backend, "trilha": trilha}
+        return {
+            **estado,
+            "alerta": alerta,
+            "conduta": r.resposta,
+            "fontes": r.fontes,
+            "backend": r.backend,
+            "trilha": trilha,
+        }
 
     def _no_consolidar(self, estado: EstadoAtendimento) -> EstadoAtendimento:
         partes = [f"Paciente {estado['paciente_id']} | risco: {estado.get('risco')}"]
         pend = estado.get("exames_pendentes", [])
-        partes.append(
-            "Exames pendentes: " + (", ".join(pend) if pend else "nenhum")
-        )
+        partes.append("Exames pendentes: " + (", ".join(pend) if pend else "nenhum registrado"))
         if estado.get("alerta"):
             partes.append(estado["alerta"])
-        partes.append("Conduta sugerida:\n" + estado.get("conduta", "(sem conduta)"))
+        partes.append("Orientação baseada nas fontes:\n" + estado.get("conduta", "(sem resposta)"))
         if estado.get("fontes"):
-            partes.append("Fontes: " + ", ".join(estado["fontes"]))
-        partes.append("Trilha do fluxo: " + " → ".join(estado.get("trilha", []) + ["consolidar"]))
-        resumo = "\n\n".join(partes)
-        return {**estado, "resumo_final": resumo,
-                "trilha": estado.get("trilha", []) + ["consolidar"]}
+            partes.append("Fontes: " + "; ".join(estado["fontes"]))
+        trilha = estado.get("trilha", []) + ["consolidar"]
+        partes.append("Trilha do fluxo: " + " → ".join(trilha))
+        return {**estado, "resumo_final": "\n\n".join(partes), "trilha": trilha}
 
-    # ---- roteamento condicional ------------------------------------------ #
     @staticmethod
     def _rota_por_risco(estado: EstadoAtendimento) -> str:
         return "emitir_alerta" if estado.get("risco") == "vermelho" else "sugerir_conduta"
 
-    # ---- compilação ------------------------------------------------------ #
     def _compilar(self):
+        if not LANGGRAPH_AVAILABLE:
+            return _PythonGraphRunner(self)
+
         g = StateGraph(EstadoAtendimento)
         g.add_node("triagem", self._no_triagem)
         g.add_node("verificar_exames", self._no_verificar_exames)
         g.add_node("sugerir_conduta", self._no_sugerir_conduta)
         g.add_node("emitir_alerta", self._no_emitir_alerta)
         g.add_node("consolidar", self._no_consolidar)
-
         g.set_entry_point("triagem")
         g.add_edge("triagem", "verificar_exames")
         g.add_conditional_edges(
@@ -156,7 +169,6 @@ class FluxoAtendimento:
         return g.compile()
 
     def executar(self, paciente_id: str, pergunta: Optional[str] = None) -> EstadoAtendimento:
-        """Roda o fluxo completo para um paciente e retorna o estado final."""
         entrada: EstadoAtendimento = {"paciente_id": paciente_id, "trilha": []}
         if pergunta:
             entrada["pergunta"] = pergunta

@@ -31,3 +31,9 @@ src/results/models/*.pkl
 
 # Fase 3 — dados brutos dos datasets externos (não versionar; use scripts/fetch_datasets.py)
 data/external/
+
+# Fase 3 — amostra anonimizada do SIVEP usada para reproduzir o assistente
+!data/knowledge_base/sivep/patients_sivep_sample.csv
+data/knowledge_base/sivep/*.db
+results/finetuning/local_validation/*.pt
+results/finetuning/local_validation/tokenizer.json

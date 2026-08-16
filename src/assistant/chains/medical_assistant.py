@@ -1,19 +1,9 @@
-"""
-medical_assistant.py
---------------------
-Chain principal do assistente médico (requisito 2), construída com LangChain.
+"""Assistente médico: RAG + paciente estruturado + guardrails.
 
-Fluxo da chain (RetrievalQA com contextualização por paciente):
-
-    pergunta (+ paciente_id opcional)
-        │
-        ├─ guardrail de entrada ......... bloqueia pedido de prescrição direta
-        ├─ retriever .................... trechos de protocolo + FONTES (RAG)
-        ├─ patient_db ................... resumo clínico do paciente (contexto)
-        ├─ PromptTemplate → LLM ......... resposta fundamentada
-        └─ guardrail de saída ........... anexa aviso de validação humana
-
-Retorna um objeto com resposta, fontes citadas e metadados (explainability).
+Com LangChain instalado, o backend continua usando a interface ``LLM`` do
+framework. O restante do fluxo fica em Python simples para facilitar leitura e
+testes. As fontes retornam arquivo/página quando o contexto vem dos protocolos
+oficiais.
 """
 
 from __future__ import annotations
@@ -21,32 +11,29 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from langchain_core.prompts import PromptTemplate
-
 from ..knowledge.retriever import ProtocolRetriever, Trecho
 from ..knowledge.patient_db import PatientDB
 from ..safety import guardrails
 from .llm_backend import CustomMedicalLLM
 
 SYSTEM_PROMPT = (
-    "Você é um assistente clínico do hospital, especializado em SRAG. Responda de "
-    "forma objetiva e SOMENTE com base no CONTEXTO de protocolos fornecido. Cite a "
-    "fonte (código do protocolo) ao final. Nunca prescreva medicação nem indique "
-    "doses; conduta é ato médico. Responda em português do Brasil."
+    "Você é um assistente clínico especializado em SRAG. Responda somente com base "
+    "no contexto recuperado e nos dados estruturados apresentados. Não invente dados "
+    "do paciente. Nunca prescreva medicação nem indique dose; a decisão final é do "
+    "médico responsável. Responda em português do Brasil e cite as fontes usadas."
 )
 
-_TEMPLATE = PromptTemplate.from_template(
-    "CONTEXTO (protocolos internos):\n{contexto}\n\n"
+_TEMPLATE = (
+    "CONTEXTO CLÍNICO RECUPERADO:\n{contexto}\n\n"
     "{bloco_paciente}"
     "PERGUNTA DO MÉDICO:\n{pergunta}\n\n"
-    "Escreva uma resposta curta e fundamentada apenas no contexto acima. "
-    "Ao final, liste as fontes usadas."
+    "Responda de forma curta, baseada somente no contexto acima. "
+    "Se o contexto não for suficiente, diga isso claramente."
 )
 
 
 @dataclass
 class RespostaAssistente:
-    """Saída estruturada do assistente (base da explainability e da auditoria)."""
     resposta: str
     fontes: List[str] = field(default_factory=list)
     paciente_id: Optional[str] = None
@@ -56,14 +43,12 @@ class RespostaAssistente:
 
 
 class MedicalAssistant:
-    """Assistente médico: RAG + contexto do paciente + guardrails, via LangChain."""
-
     def __init__(
         self,
         retriever: Optional[ProtocolRetriever] = None,
         patient_db: Optional[PatientDB] = None,
         llm: Optional[CustomMedicalLLM] = None,
-        top_k: int = 3,
+        top_k: int = 5,
     ):
         self.retriever = retriever or ProtocolRetriever()
         self.patient_db = patient_db or PatientDB()
@@ -71,30 +56,29 @@ class MedicalAssistant:
         self.top_k = top_k
 
     def responder(self, pergunta: str, paciente_id: Optional[str] = None) -> RespostaAssistente:
-        # 1) Guardrail de entrada
+        # 1) Primeiro barramos pedidos que o assistente não deve atender diretamente.
         g = guardrails.checar_entrada(pergunta)
 
-        # 2) RAG — recupera trechos e fontes (sempre, para citar protocolo)
+        # 2) O RAG roda mesmo no caminho bloqueado, pois ainda podemos mostrar onde
+        # estão os critérios/protocolos sem devolver uma prescrição.
         trechos: List[Trecho] = self.retriever.buscar(pergunta, top_k=self.top_k)
         contexto = self.retriever.contexto_formatado(trechos)
-        fontes = sorted({t.protocolo for t in trechos})
+        fontes = []
+        for trecho in trechos:
+            cit = trecho.citacao()
+            if cit not in fontes:
+                fontes.append(cit)
 
-        # 3) Contexto do paciente (se informado)
+        # 3) Quando há patient_id, só fatos vindos da base entram no prompt.
         bloco_paciente = ""
         if paciente_id:
             resumo = self.patient_db.resumo_clinico(paciente_id)
             bloco_paciente = f"DADOS DO PACIENTE (base estruturada):\n{resumo}\n\n"
 
-        # Caminho bloqueado: não gera prescrição; devolve resumo de protocolo.
         if not g.permitido:
-            corpo = (
-                guardrails.RESPOSTA_BLOQUEIO
-                + "\n\nResumo dos protocolos pertinentes:\n"
-                + contexto
-            )
-            resposta = guardrails.sanitizar_saida(corpo)
+            resposta = guardrails.sanitizar_saida(guardrails.RESPOSTA_BLOQUEIO)
             if fontes:
-                resposta += f"\n\nFontes: {', '.join(fontes)}."
+                resposta += "\n\nFontes consultadas: " + "; ".join(fontes) + "."
             return RespostaAssistente(
                 resposta=resposta,
                 fontes=fontes,
@@ -104,16 +88,20 @@ class MedicalAssistant:
                 categorias_guardrail=g.categorias,
             )
 
-        # 4) Monta o prompt e chama a LLM via LangChain
+        # 4) Geração: adapter LoRA/Ollama quando disponível; em ambiente sem modelo,
+        # o backend extrativo usa o mesmo contexto recuperado em vez de simular loss.
         prompt = _TEMPLATE.format(
-            contexto=contexto, bloco_paciente=bloco_paciente, pergunta=pergunta
+            contexto=contexto,
+            bloco_paciente=bloco_paciente,
+            pergunta=pergunta,
         )
         bruto = self.llm.invoke(prompt, system=SYSTEM_PROMPT)
 
-        # 5) Guardrail de saída (aviso obrigatório) + fontes explícitas
+        # 5) A saída também passa pelo guardrail. Se a LLM produzir uma dose imperativa,
+        # o conteúdo é substituído por uma mensagem segura antes de chegar ao usuário.
         resposta = guardrails.sanitizar_saida(bruto)
         if fontes and not any(f in resposta for f in fontes):
-            resposta += f"\n\nFontes: {', '.join(fontes)}."
+            resposta += "\n\nFontes consultadas: " + "; ".join(fontes) + "."
 
         return RespostaAssistente(
             resposta=resposta,

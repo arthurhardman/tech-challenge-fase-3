@@ -1,71 +1,60 @@
 # Roteiro do Vídeo — Fase 3 (até 15 min)
 
-**Objetivo:** demonstrar o assistente médico (fine-tuning + LangChain/LangGraph),
-um fluxo automatizado, respostas clínicas contextualizadas e os logs/validação.
-
-Dica: rode tudo com `LLM_BACKEND=mock` para garantir que funcione ao vivo,
-offline. Se tiver Ollama, mostre também com `LLM_BACKEND=ollama`.
+**Objetivo:** mostrar o treino, o assistente contextualizado, o fluxo LangGraph, segurança, fontes e auditoria sem depender de dados fictícios para a demonstração principal.
 
 ---
 
 ## 0. Abertura (0:00–1:00)
-- Apresentar o grupo e recapitular o projeto: SRAG, Fases 1–2 (classificação e
-  otimização + LLM explicativa) e o salto da Fase 3 (assistente + fluxos).
-- Mostrar a estrutura `src/assistant/` e o diagrama `results/figures/fluxo_langchain.png`.
 
-## 1. Dados e fine-tuning (1:00–4:30)
-- Rodar `python scripts/gen_synthetic_data.py` — mostrar protocolos, FAQ,
-  laudos e prontuários sintéticos/anonimizados.
-- Mostrar `data_prep.anonimizar()` mascarando CPF/e-mail (ao vivo, no notebook).
-- **Datasets sugeridos (abordagem híbrida):** explicar que, além dos dados do
-  hospital (SRAG, PT-BR), o projeto incorpora **PubMedQA** (licença MIT) e
-  **MedQuAD** (CC BY 4.0). Mostrar a célula `carregar_externos()` no notebook com
-  uma amostra de cada. Citar `data/knowledge_base/external/CITATIONS.md`.
-- Rodar `python -m src.assistant.finetuning.dataset_builder` — **627 exemplos**
-  (27 hospital + 250 PubMedQA + 350 MedQuAD); apontar a composição impressa.
-- Rodar `python -m src.assistant.finetuning.train --mode demo` — abrir a curva
-  de perda `results/figures/finetuning_loss.png`.
-- Explicar a decisão modo `real` (LoRA/PEFT, GPU) × modo `demo` (offline), e o
-  porquê do híbrido: atende ao requisito literal ("dados do hospital") **e** à
-  sugestão de datasets.
+- Recapitular rapidamente Fases 1 e 2.
+- Explicar que a Fase 3 adiciona fine-tuning, RAG, LangChain/LangGraph e consulta estruturada de pacientes.
+- Mostrar a estrutura `src/assistant/`, `src/finetuning/` e o diagrama.
 
-## 2. Assistente com LangChain (4:30–8:00)
-- No notebook `08_finetuning_langchain.ipynb`:
-  - Pergunta clínica: *"Qual o alvo de saturação em oxigenoterapia?"* → mostrar
-    resposta **com fonte** (PROT-SRAG-02) e o disclaimer.
-  - **Guardrail:** *"Prescreva a dose exata de corticoide"* → mostrar bloqueio.
-  - **Contexto do paciente:** escolher um `PAC-XXXX`, mostrar o resumo clínico e
-    uma resposta contextualizada (exames pendentes).
-  - **RAG híbrido:** perguntar *"What are the symptoms of leukemia?"* → mostrar
-    que o assistente responde a partir do **MedQuAD**, citando a fonte
-    (`MedQuAD:CancerGov`). Explicar: perguntas de SRAG puxam os protocolos PT-BR;
-    perguntas gerais puxam o MedQuAD — sempre com a fonte.
+## 1. Dados e preparação (1:00–4:00)
 
-## 3. Fluxo automatizado com LangGraph (8:00–11:00)
-- `python -m src.assistant.cli fluxo --paciente PAC-0001` (paciente vermelho):
-  - mostrar a **trilha** `triagem → verificar_exames → emitir_alerta → consolidar`
-    e o **alerta** para a equipe.
-- Rodar o fluxo para um paciente verde/amarelo → trilha com `sugerir_conduta`.
-- Explicar o roteamento condicional por risco no `graph.py`.
+- Mostrar `patients_sivep_sample.csv` e explicar que são 8 mil registros reais anonimizados do SIVEP, de 2023 a 2026.
+- Mostrar que o adaptador também aceita os CSVs completos do OpenDataSUS.
+- Abrir `data/knowledge_base/official/` e mostrar os protocolos oficiais/chunks com página.
+- Mostrar a composição do dataset: MedQuAD + PubMedQA + 100 Q&As SRAG + poucos formatos internos sintéticos.
+- Demonstrar rapidamente a anonimização com um texto contendo nome/CPF/e-mail.
 
-## 4. Segurança, auditoria e explainability (11:00–13:00)
-- Abrir `results/finetuning/audit_events.jsonl` — mostrar um evento com fontes,
-  backend, paciente e decisão de guardrail.
-- Reforçar: a resposta sempre cita o protocolo (explainability) e nunca
-  prescreve sem validação humana.
+## 2. Fine-tuning (4:00–6:30)
 
-## 5. Avaliação e encerramento (13:00–15:00)
-- `python -m src.assistant.finetuning.evaluate` — mostrar as métricas (fonte
-  SRAG 100%, recuperação MedQuAD 100%, disclaimer 100%, bloqueio 100%, cobertura
-  ~59%) e a composição do dataset (hospital + PubMedQA + MedQuAD); analisá-las.
-- Rodar `pytest tests/test_finetuning.py tests/test_assistant.py -v` (18 testes).
-- Fechar: arquitetura plugável — trocar o backend ativa a LLM fine-tuned real
-  sem mudar as chains; e o híbrido cobre requisito literal + datasets sugeridos.
+- Rodar `python -m src.finetuning.train_lora --dry-run` para validar o dataset do LoRA.
+- Explicar que o treino LoRA completo requer GPU e usa Falcon/LLaMA/Mistral.
+- Mostrar a validação real em CPU (`src/finetuning/local_validation.py`) e as métricas salvas, deixando claro que esse Transformer pequeno valida o pipeline, mas não substitui o LLM pré-treinado.
+
+## 3. Assistente contextualizado (6:30–9:30)
+
+- No notebook `08_finetuning_langchain.ipynb`, selecionar um paciente real anonimizado do SQLite.
+- Fazer uma pergunta sobre sinais de atenção no caso.
+- Mostrar a resposta e as fontes com arquivo/página.
+- Fazer uma pergunta geral de saúde para mostrar a recuperação complementar de MedQuAD/PubMedQA.
+
+## 4. Segurança e LangGraph (9:30–12:30)
+
+- Perguntar uma dose/prescrição direta e mostrar que o guardrail bloqueia.
+- Mostrar o fluxo `triagem → verificar_exames → emitir_alerta/sugerir_conduta → consolidar`.
+- Explicar que risco e exames vêm somente dos campos existentes no PatientDB; o fluxo não inventa medidas ausentes.
+
+## 5. Avaliação, logs e fechamento (12:30–15:00)
+
+- Mostrar `results/finetuning/eval_metrics.json`:
+  - fonte correta top-k: 80%;
+  - fonte + página: 70%;
+  - aviso médico: 100%;
+  - bloqueio de prescrição: 100%;
+  - sanity checks MedQuAD/PubMedQA: 100%.
+- Abrir o log de auditoria e mostrar pergunta, paciente, fontes e decisão de guardrail.
+- Rodar `pytest tests -q` e mostrar o total de testes passando.
+- Encerrar lembrando que a solução é apoio à decisão e exige validação humana.
 
 ---
 
-### Checklist de gravação
-- [ ] Terminal com fonte legível e `LLM_BACKEND=mock` exportado.
-- [ ] Notebook já com o kernel selecionado.
-- [ ] Figuras abertas: `finetuning_loss.png`, `fluxo_langchain.png`.
-- [ ] `audit_events.jsonl` à mão.
+### Antes de gravar
+
+- [ ] Rodar `python run_fase3.py --mode local` pelo menos uma vez.
+- [ ] Conferir que `patients_sivep.db` foi criado.
+- [ ] Deixar o notebook 08 aberto nos pontos principais.
+- [ ] Deixar `eval_metrics.json`, diagrama e audit log fáceis de abrir.
+- [ ] Se houver GPU disponível, mostrar também os artefatos reais do LoRA.

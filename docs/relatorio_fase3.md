@@ -1,278 +1,252 @@
 # Relatório Técnico — Tech Challenge Fase 3
-## Assistente Médico com Fine-tuning de LLM + LangChain/LangGraph
-### FIAP Pós-Tech — Machine Learning Engineering
+## Assistente Médico com Fine-tuning, LangChain e LangGraph
+
+## 1. Objetivo
+
+A Fase 3 amplia o projeto de SRAG das fases anteriores com um assistente clínico
+capaz de consultar protocolos, usar dados estruturados do paciente, responder com
+fontes e executar um fluxo automatizado de triagem/alerta com LangGraph.
+
+A implementação continua sendo uma ferramenta de apoio: não prescreve, não define
+dose e sempre exige validação do médico responsável.
 
 ---
 
-## 1. Introdução
+## 2. Dados usados
 
-Após a classificação de desfecho clínico (Fase 1) e a otimização de modelos com
-Algoritmos Genéticos e uma LLM explicativa (Fase 2), a Fase 3 dá ao "hospital"
-um **assistente virtual médico**: um sistema que responde dúvidas clínicas,
-sugere condutas com base nos **protocolos internos**, consulta **prontuários**
-estruturados e coordena um **fluxo de decisão automatizado e seguro**.
+### 2.1 SIVEP-Gripe / OpenDataSUS
 
-Mantivemos o domínio das fases anteriores — **SRAG** (Síndrome Respiratória
-Aguda Grave) — para que o projeto permaneça coeso. Todos os dados são
-**sintéticos e anonimizados**; nenhuma informação real de paciente é utilizada.
+O assistente passou a aceitar registros reais do SIVEP. Para o repositório é
+versionada uma amostra anonimizada de 8.000 casos, com registros de 2023 a 2026.
 
-O sistema atende aos quatro requisitos do enunciado: (1) fine-tuning com dados
-médicos internos; (2) assistente com LangChain integrando LLM + base
-estruturada + contexto do paciente; (3) segurança, auditoria e explainability;
-(4) código modular com README.
+O adaptador também foi testado com os quatro arquivos completos usados no projeto,
+somando 1.071.699 registros. Os CSVs brutos não são versionados por causa do
+tamanho.
 
----
+Durante a preparação:
 
-## 2. Arquitetura geral
+- campos de identificação não entram na base do assistente;
+- um novo `patient_id` é criado;
+- somente variáveis clínicas úteis são mantidas;
+- o resultado é salvo em SQLite para não carregar todos os pacientes na memória.
 
-```
-data/knowledge_base/            (dados sintéticos anonimizados)
-  ├── protocolos/*.md           → fonte de verdade (RAG)
-  ├── faq_medicos.jsonl         → perguntas frequentes (fine-tuning + avaliação)
-  ├── laudos_modelos.jsonl      → modelos de laudo/receita/procedimento
-  └── prontuarios.json          → base estruturada consultada pelo assistente
+### 2.2 Protocolos e literatura
 
-src/assistant/
-  ├── config.py                 → caminhos e flags centrais
-  ├── finetuning/               → data_prep, dataset_builder, train, evaluate
-  ├── knowledge/                → retriever (RAG TF-IDF) + patient_db
-  ├── safety/                   → guardrails + audit_log
-  ├── chains/                   → llm_backend (LangChain) + medical_assistant + graph (LangGraph)
-  └── cli.py                    → interface de linha de comando
-```
+O RAG usa:
 
-O diagrama do fluxo LangChain/LangGraph está em
-`results/figures/fluxo_langchain.png` (seção 5).
+- protocolos originais do projeto;
+- 5 documentos oficiais de SRAG/vigilância;
+- 857 chunks com arquivo, página e `chunk_id`;
+- PubMedQA;
+- MedQuAD.
+
+Também foram incluídos 100 pares pergunta/resposta curados a partir dos protocolos
+oficiais. Vinte perguntas ficam separadas para avaliação.
 
 ---
 
-## 3. Fine-tuning da LLM com dados médicos internos (Requisito 1)
+## 3. Fine-tuning
 
-### 3.1 Fontes de dados e dataset de instrução
+O pipeline oficial está em `src/finetuning/`.
 
-O dataset de *instruction tuning* combina, na **abordagem híbrida**, os dados
-internos do hospital (SRAG, em PT-BR) com os dois datasets públicos sugeridos no
-enunciado (PubMedQA e MedQuAD, em inglês), todos convertidos ao mesmo formato
-`{system, prompt, response, origem, fonte, idioma}`:
+### 3.1 Dataset
 
-| Origem | Como vira exemplo | Idioma | Qtd |
-|--------|-------------------|--------|-----|
-| FAQ de médicos (hospital) | pergunta → resposta (com fonte) | PT | 10 |
-| Protocolos internos (hospital) | "O que o protocolo X orienta sobre <seção>?" → corpo | PT | 14 |
-| Modelos de laudo/receita/procedimento | instrução → modelo do documento | PT | 3 |
-| **PubMedQA** (Jin et al., 2019) | questão de pesquisa → veredito + resposta longa | EN | 250 |
-| **MedQuAD** (Ben Abacha & Demner-Fushman, 2019) | pergunta de saúde do NIH → resposta | EN | 350 |
+A preparação combina:
 
-**Total: 627 exemplos.** Os dados do hospital atendem ao requisito literal
-("dados próprios do hospital"); PubMedQA e MedQuAD atendem à sugestão de datasets
-e ampliam a cobertura clínica geral.
+| Fonte | Exemplos |
+|---|---:|
+| MedQuAD | 1.500 |
+| PubMedQA | 1.000 |
+| Protocolos oficiais SRAG | 100 |
+| Exemplos internos sintéticos | 6 |
+| **Total único** | **2.587** |
 
-**Sobre os datasets sugeridos:**
-- **PubMedQA** — subconjunto rotulado (`ori_pqal.json`, 1.000 QAs de pesquisa com
-  veredito sim/não/talvez + resposta longa). Licença MIT. Usamos uma fatia curada.
-- **MedQuAD** — QAs de 12 sites do NIH. Usamos os **9 subconjuntos que mantêm as
-  respostas**; excluímos 3 (ADAM, MedlinePlus Drugs e Herbs) cujas respostas foram
-  removidas por copyright do MedlinePlus. Licença CC BY 4.0.
+O split atual gera 2.095 linhas de treino, 258 de validação e 258 de teste.
 
-Citações e licenças completas em `data/knowledge_base/external/CITATIONS.md`. Os
-dados brutos são baixados por `scripts/fetch_datasets.py`; fatias curadas ficam
-versionadas para rodar offline. A anonimização e a curadoria (seção 3.2) são
-aplicadas a todas as fontes.
+Os exemplos sintéticos foram mantidos apenas para representar formatos como laudo,
+receita e procedimento interno. O domínio SRAG agora é reforçado principalmente
+pelos 100 exemplos oficiais, então o oversampling sintético pôde ser reduzido.
 
-### 3.2 Preprocessing, anonimização e curadoria
+### 3.2 LoRA/PEFT
 
-Antes de qualquer treino, `data_prep.py` aplica:
+`src/finetuning/train_lora.py` implementa o caminho de fine-tuning de um modelo
+pré-treinado com LoRA/PEFT. O pipeline aceita Falcon, LLaMA ou Mistral conforme a
+configuração.
 
-- **Anonimização de PII** por regex: CPF, cartão SUS (CNS), telefone, e-mail,
-  datas, RG e nomes rotulados são substituídos por marcadores genéricos
-  (`[CPF]`, `[EMAIL]`…). A função é **idempotente**.
-- **Normalização**: colapso de espaços/quebras e `NFC`.
-- **Curadoria**: remoção de respostas curtas/vazias e **deduplicação** por
-  (prompt, resposta).
-
-Embora os dados já sejam sintéticos, a anonimização é real e aplicável a dados
-de produção — é onde entraria o pipeline de conformidade (LGPD) do hospital.
-
-### 3.3 Estratégia de treino: LoRA/PEFT (real) + modo demo
-
-Seguindo a filosofia da Fase 2 (backend Ollama ↔ mock), o `train.py` tem dois modos:
-
-- **`real`** — fine-tuning por **LoRA/PEFT** (`transformers` + `peft`) sobre um
-  modelo-base causal do Hugging Face (LLaMA/Falcon/Mistral; padrão
-  `meta-llama/Llama-3.2-1B-Instruct`). Requer GPU e download do modelo. É o
-  caminho de produção; o código está completo em `treinar_real()`.
-- **`demo`** (padrão) — executa **todo o pipeline de dados real** e um **laço de
-  treinamento simulado** que consome o dataset e produz artefatos reais: curva
-  de perda, `train_metrics.json` e o manifesto do adapter. Roda em qualquer
-  máquina, sem GPU nem rede, garantindo que o avaliador reproduza a demonstração.
-
-> **Decisão explícita:** o ambiente de avaliação não tem GPU nem acesso ao
-> modelo-base. Por isso a demo usa o modo simulado, exatamente como a Fase 2
-> usa o backend `mock` quando o Ollama não está disponível. O código de
-> fine-tuning real está presente e comentado, pronto para rodar em GPU.
-
-### 3.4 Resultado do fine-tuning (modo demo)
-
-Configuração: 3 épocas, LoRA r=16, α=32, 27 exemplos. A perda simulada converge
-de forma realista:
-
-| Métrica | Valor |
-|---------|-------|
-| Perda inicial | ~1.13 |
-| Perda final | ~0.25 |
-| Passos registrados | 15 |
-
-Curva: `results/figures/finetuning_loss.png`.
-
----
-
-## 4. Assistente médico com LangChain (Requisito 2)
-
-### 4.1 Integração da LLM customizada
-
-`CustomMedicalLLM` (em `chains/llm_backend.py`) adapta o cliente da Fase 2 à
-interface `LLM` do LangChain. Isso **desacopla** a chain do backend: hoje
-demonstramos com Ollama/mock; em produção, o mesmo wrapper serve a LLM
-fine-tuned (apontando o Ollama para o modelo com o adapter LoRA, ou trocando por
-um endpoint HF). No modo demonstração, um mock **extrativo** gera respostas
-ancoradas no contexto recuperado — coerente e offline.
-
-### 4.2 Chain principal (RAG + contexto do paciente)
-
-`MedicalAssistant.responder()` executa:
-
-1. **Guardrail de entrada** — bloqueia pedidos de prescrição/dose direta.
-2. **Retriever (RAG)** — recupera trechos por TF-IDF e **retorna a fonte**. A
-   base é híbrida: **protocolos SRAG (PT-BR)** como referência primária do
-   hospital + **MedQuAD (EN)** como base de referência complementar. Uma pergunta
-   sobre SRAG recupera o protocolo interno; uma pergunta clínica geral recupera a
-   entrada do MedQuAD — sempre citando a origem (`PROT-SRAG-0x` ou `MedQuAD:<fonte>`).
-3. **PatientDB** — se informado um `paciente_id`, injeta o **resumo clínico**
-   (SpO2, FR, comorbidades, exames pendentes) — contextualização com dados
-   atualizados do paciente.
-4. **PromptTemplate → LLM** — resposta fundamentada apenas no contexto.
-5. **Guardrail de saída** — anexa o aviso de validação humana e as fontes.
-
-A saída é um objeto estruturado (`RespostaAssistente`) com resposta, fontes,
-paciente e backend — base para explainability e auditoria.
-
-### 4.3 Consulta à base estruturada
-
-`PatientDB` lê `prontuarios.json` (40 pacientes sintéticos, IDs `PAC-XXXX`) e
-oferece consultas determinísticas: `get`, `exames_pendentes`, `resumo_clinico`.
-Nada é inventado pela LLM — os fatos do paciente vêm sempre da base.
-
----
-
-## 5. Fluxo de decisão automatizado com LangGraph
-
-O `FluxoAtendimento` (`chains/graph.py`) implementa o cenário do enunciado — "ao
-receber informações de um paciente, acionar etapas como verificar exames,
-sugerir tratamentos e emitir alertas" — como um `StateGraph`:
-
-```
-triagem → verificar_exames → (risco?) ┬── vermelho → emitir_alerta ┐
-                                       └── verde/amarelo → sugerir_conduta ┘ → consolidar → END
-```
-
-- **triagem** — carrega o prontuário e a classificação de risco.
-- **verificar_exames** — lista exames pendentes.
-- **roteamento condicional** por risco: **vermelho** aciona `emitir_alerta`
-  (equipe de resposta rápida); demais seguem para `sugerir_conduta`.
-- **sugerir_conduta / emitir_alerta** — reutilizam a chain LangChain (RAG +
-  guardrails).
-- **consolidar** — monta o resumo final e a **trilha** do fluxo.
-
-Cada nó registra um `AuditEvent`, tornando todo o fluxo auditável.
-
-**Diagrama:** ![fluxo](../results/figures/fluxo_langchain.png)
-
----
-
-## 6. Segurança, auditoria e explainability (Requisito 3)
-
-### 6.1 Limites de atuação (guardrails)
-
-- **Entrada:** `checar_entrada()` detecta pedidos de prescrição/dose/posologia
-  direta e os bloqueia — o assistente responde com o resumo do protocolo
-  (sem números de dose), nunca com uma prescrição.
-- **Saída:** `sanitizar_saida()` garante, de forma idempotente, o aviso: *"Toda
-  conduta, prescrição e dose exige validação e assinatura do médico
-  responsável."*
-
-### 6.2 Logging e auditoria
-
-`AuditLogger` grava cada interação em dois canais: um **log de texto** legível e
-um **JSONL estruturado** (`audit_events.jsonl`) com timestamp, pergunta,
-paciente, fontes citadas, backend da LLM, decisões de guardrail e o nó do fluxo.
-Isso permite reconstruir *por que* o assistente respondeu o que respondeu.
-
-### 6.3 Explainability
-
-A explainability é estrutural: o RAG **sempre retorna o protocolo de origem**, e
-a resposta lista as **fontes** (ex.: `PROT-SRAG-02`). O médico pode verificar a
-recomendação diretamente no protocolo citado.
-
----
-
-## 7. Avaliação do modelo e análise dos resultados (Requisito de relatório)
-
-Como a demo roda offline, avaliamos o **assistente completo** — o produto final
-— sobre um conjunto *gold* de 10 perguntas frequentes, cada uma com o protocolo
-correto. Métricas objetivas e auditáveis (`finetuning/evaluate.py`):
-
-| Métrica | Valor | Interpretação |
-|---------|-------|---------------|
-| Acurácia de fonte (RAG, gold SRAG) | **100%** | o retriever traz o protocolo correto para toda pergunta gold, mesmo com o MedQuAD indexado junto |
-| Recuperação MedQuAD (RAG híbrido) | **100%** | perguntas do MedQuAD recuperam corretamente uma fonte MedQuAD |
-| Cobertura de termos | **~59%** | fração de termos-chave da resposta ideal presentes na resposta |
-| Taxa de disclaimer | **100%** | toda resposta traz o aviso de validação humana |
-| Bloqueio de prescrição | **100%** | todos os pedidos de prescrição direta são bloqueados |
-
-Composição do dataset de fine-tuning: 27 exemplos do hospital (PT) + 250 PubMedQA
-+ 350 MedQuAD (EN) = **627**.
-
-**Análise.** A acurácia de fonte perfeita mesmo após adicionar 350 entradas do
-MedQuAD ao índice mostra que a recuperação continua bem calibrada — o pilar da
-explainability. A recuperação MedQuAD em 100% confirma que o RAG híbrido roteia
-corretamente perguntas gerais para a base complementar. A cobertura de termos de
-~59% reflete o **mock extrativo** da demo (que resume trechos, sem paráfrase); com a LLM fine-tuned real, espera-se cobertura maior, pois o modelo
-reformula e sintetiza. As taxas de disclaimer e bloqueio em 100% confirmam que
-as salvaguardas de segurança operam de forma determinística — o requisito mais
-crítico num assistente clínico.
-
-**Limitações.** (i) A avaliação de qualidade textual completa exige a LLM
-fine-tuned real (GPU + modelo-base); (ii) o corpus é sintético e reduzido, ideal
-para validar o *pipeline*, não a cobertura clínica; (iii) a métrica de cobertura
-por termos é um proxy — uma avaliação humana ou por LLM-juiz seria o próximo
-passo.
-
----
-
-## 8. Reprodutibilidade
+O comando abaixo foi validado no ambiente atual:
 
 ```bash
-python scripts/gen_synthetic_data.py            # base sintética
-python -m src.assistant.finetuning.train --mode demo   # fine-tuning (demo)
-python -m src.assistant.finetuning.evaluate     # avaliação
-python -m src.assistant.cli fluxo --paciente PAC-0001  # fluxo LangGraph
-pytest tests/test_finetuning.py tests/test_assistant.py -v   # 18 testes
+python -m src.finetuning.train_lora --dry-run
 ```
 
-Para o fine-tuning real, em máquina com GPU:
+Resultado: 2.095 exemplos de treino no formato chat esperado.
 
-```bash
-pip install transformers peft datasets accelerate torch
-python -m src.assistant.finetuning.train --mode real --epochs 3
-```
+O treinamento LoRA completo exige GPU e as dependências de
+`requirements-finetuning.txt`.
+
+### 3.3 Validação real em CPU
+
+Para não depender de loss simulada, foi adicionado um Transformer pequeno em
+`src/finetuning/local_validation.py`. Ele serve para testar de ponta a ponta o
+processo de treino em CPU.
+
+Última execução:
+
+| Métrica | Resultado |
+|---|---:|
+| Pares de pré-treino | 95 |
+| Exemplos de fine-tuning | 80 |
+| Exemplos de avaliação | 20 |
+| Loss final do pré-treino | 5.7822 |
+| Loss final do fine-tuning | 3.4328 |
+| Token F1 médio | 0.2111 |
+
+Esse modelo pequeno não substitui o LLM da entrega. Ele comprova que preparação,
+treino, checkpoint e inferência estão funcionando sem simulação.
 
 ---
 
-## 9. Conclusão
+## 4. Assistente com LangChain
 
-A Fase 3 entrega um assistente médico coeso com as fases anteriores: um pipeline
-de fine-tuning (com anonimização e curadoria), um assistente LangChain com RAG e
-contextualização por paciente, um fluxo de decisão LangGraph e as salvaguardas
-de segurança, auditoria e explainability exigidas. A arquitetura é **plugável**:
-trocando o backend, o mesmo código passa a operar com a LLM fine-tuned real, sem
-alterar as chains nem o fluxo.
+`MedicalAssistant` executa as seguintes etapas:
+
+1. guardrail de entrada;
+2. busca de contexto no RAG;
+3. consulta ao paciente no `PatientDB`;
+4. geração com adapter LoRA, Ollama ou checkpoint local;
+5. guardrail de saída;
+6. resposta com fontes.
+
+O `PatientDB` usa SQLite quando existe uma base SIVEP preparada e mantém
+compatibilidade com o JSON sintético anterior.
+
+O backend da LLM continua compatível com LangChain. Quando o adapter LoRA está
+presente, ele é carregado por `src/finetuning/inference.py`.
+
+---
+
+## 5. Fluxo LangGraph
+
+O fluxo implementa:
+
+```text
+triagem
+  ↓
+verificar_exames
+  ↓
+risco vermelho? ── sim ──> emitir_alerta
+       │
+       não
+       ↓
+sugerir_conduta
+       ↓
+consolidar
+```
+
+Os mesmos nós podem ser executados em Python puro quando LangGraph não está
+instalado, o que permite testar a lógica do fluxo em CI. Com LangGraph instalado,
+a implementação usa `StateGraph` normalmente.
+
+---
+
+## 6. Segurança e anonimização
+
+### 6.1 Entrada
+
+Pedidos como "prescreva", "qual a dose" ou "qual a posologia" são bloqueados
+antes de chegar à LLM.
+
+### 6.2 Saída
+
+A resposta também é verificada. Frases imperativas com dose, por exemplo:
+
+```text
+Tome 50 mg de medicamento agora.
+```
+
+são removidas e substituídas por uma mensagem segura.
+
+### 6.3 Anonimização
+
+A anonimização textual cobre CPF, CNS, telefone, e-mail, prontuário, datas e nomes
+rotulados. O padrão foi ajustado para nomes brasileiros com acentuação.
+
+No caminho SIVEP, a proteção principal é não carregar identificadores pessoais na
+base usada pelo assistente.
+
+---
+
+## 7. Explainability e auditoria
+
+Cada trecho recuperado pode carregar:
+
+- arquivo;
+- página;
+- `chunk_id`;
+- score de similaridade.
+
+As respostas exibem essas fontes e o `AuditLogger` registra pergunta, paciente,
+backend, fontes e decisões de guardrail em log/JSONL.
+
+---
+
+## 8. Resultados da avaliação
+
+A avaliação usa 20 perguntas SRAG separadas da curadoria de treino.
+
+| Métrica | Resultado |
+|---|---:|
+| Fonte correta no top-k | 80% |
+| Fonte + página correta no top-k | 70% |
+| Aviso de validação médica | 100% |
+| Bloqueio de prescrição direta | 100% |
+| Recuperação MedQuAD no teste de sanidade | 100% |
+| Recuperação PubMedQA no teste de sanidade | 100% |
+
+Em comparação com a versão anterior, o projeto agora consegue apontar arquivo e
+página, usa dados reais estruturados e não depende do treino simulado para validar
+o pipeline.
+
+---
+
+## 9. Testes e validação
+
+Foram executados:
+
+```bash
+python -m compileall -q src tests scripts run_pipeline.py run_fase3.py
+python -m pytest tests -q
+python run_fase3.py --mode local
+python -m src.finetuning.train_lora --dry-run
+```
+
+Resultado atual dos testes automatizados:
+
+```text
+66 passed
+```
+
+O adaptador SIVEP também foi testado separadamente com os quatro CSVs completos,
+criando um SQLite com 1.071.699 registros.
+
+---
+
+## 10. Limitações
+
+- O fine-tuning LoRA completo ainda precisa ser executado em uma máquina com GPU.
+- O Transformer local é propositalmente pequeno e não deve ser usado como modelo
+  clínico real.
+- Os dados SIVEP servem para contextualização epidemiológica/estruturada e não
+  substituem um prontuário eletrônico completo do hospital.
+- A solução continua exigindo revisão humana para qualquer decisão clínica.
+
+---
+
+## 11. Conclusão
+
+A Fase 3 passa a reunir dados reais anonimizados do SIVEP, protocolos oficiais,
+PubMedQA, MedQuAD, fine-tuning LoRA, validação real em CPU, RAG com arquivo/página,
+PatientDB em SQLite, LangChain, LangGraph, guardrails e auditoria.
+
+A arquitetura mantém os componentes anteriores do projeto, mas deixa o caminho de
+dados e de treinamento mais próximo do que seria usado em uma implantação real.

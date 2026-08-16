@@ -1,81 +1,90 @@
-"""
-llm_backend.py
---------------
-Integra a LLM customizada ao LangChain (requisito 2).
+"""Backend da LLM usado pelo assistente.
 
-Reaproveita o `LLMClient` da Fase 2 (backend Ollama local + fallback mock) e o
-expõe como um `LLM` do LangChain, para ser usado nas chains e no LangGraph. Em
-produção, o mesmo wrapper serve o modelo *fine-tuned* (basta apontar o Ollama
-para o modelo com o adapter LoRA aplicado, ou trocar por um endpoint HF).
+Quando LangChain está instalado, ``CustomMedicalLLM`` implementa a interface
+``LLM`` normalmente. Em ambientes de teste sem a dependência, mantemos uma
+interface mínima com ``invoke`` para que RAG, segurança, banco e LangGraph
+possam ser validados sem mascarar a ausência da biblioteca.
 
-Assim, o pipeline LangChain fica desacoplado do backend: hoje demonstramos com
-Ollama/mock; amanhã, com a LLM fine-tuned, sem mudar as chains.
+O backend também consegue usar o adapter LoRA de ``src/finetuning`` quando ele
+já foi treinado e salvo em ``results/finetuned_model``.
 """
 
 from __future__ import annotations
 
+import os
 import re
 from typing import Any, List, Optional
 
-from langchain_core.callbacks.manager import CallbackManagerForLLMRun
-from langchain_core.language_models.llms import LLM
+try:  # caminho usado na entrega com LangChain instalado
+    from langchain_core.callbacks.manager import CallbackManagerForLLMRun
+    from langchain_core.language_models.llms import LLM as _LangChainLLM
+    LANGCHAIN_AVAILABLE = True
+except ImportError:  # permite testar o restante do projeto em CPU/offline
+    CallbackManagerForLLMRun = Any
+    LANGCHAIN_AVAILABLE = False
 
-# Cliente da Fase 2 (Ollama/mock). Import defensivo p/ mensagem clara.
+    class _LangChainLLM:
+        def __init__(self, **kwargs):
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+
+        def invoke(self, prompt: str, **kwargs):
+            return self._call(prompt, **kwargs)
+
 from src.llm.client import LLMClient, get_client
+from src.finetuning.inference import FineTunedAssistant
 
 
-def _mock_grounded(prompt: str) -> str:
-    """
-    Mock extrativo para a demo OFFLINE do assistente.
-
-    O mock genérico da Fase 2 foi feito para explicar predições de risco; aqui,
-    no assistente clínico, geramos uma resposta ANCORADA no bloco CONTEXTO do
-    prompt — extraindo o primeiro trecho de protocolo e sua fonte. Assim a demo
-    roda sem Ollama e ainda produz respostas fundamentadas e citando a fonte.
-    Em produção, este caminho é substituído pela LLM fine-tuned (via Ollama/HF).
-    """
-    # Fontes marcadas como "[Fonte: PROT-... — Título]"
+def _extractive_grounded(prompt: str) -> str:
+    """Fallback extrativo ancorado no contexto, usado somente sem modelo disponível."""
     fontes = re.findall(r"\[Fonte:\s*([^\]]+)\]", prompt)
-    # Blocos de contexto: texto após cada marcador de fonte.
     blocos = re.split(r"\[Fonte:[^\]]+\]\s*", prompt)
     trecho = ""
     if len(blocos) > 1:
-        # primeiro bloco de conteúdo após uma fonte; corta no próximo cabeçalho
         bruto = blocos[1].split("DADOS DO PACIENTE")[0].split("PERGUNTA DO MÉDICO")[0]
-        # pega as 2 primeiras frases
         frases = re.split(r"(?<=[.!?])\s+", bruto.strip())
         trecho = " ".join(frases[:2]).strip()
-
-    codigos = ", ".join(sorted({f.split(" — ")[0].strip() for f in fontes})) or "protocolo interno"
-    if not trecho:
-        return (
-            "Com base nos protocolos internos, recomenda-se seguir a conduta "
-            f"prevista em {codigos}. "
-            "Trata-se de apoio à decisão; a conduta final é do médico responsável."
-        )
-    return (
-        f"[demonstração — resposta extrativa dos protocolos]\n"
-        f"Com base nos protocolos internos: {trecho} "
-        f"\n\nFontes: {codigos}."
-    )
+    fonte_txt = ", ".join(fontes[:3]) or "fonte clínica recuperada"
+    if trecho:
+        return f"Com base no contexto recuperado: {trecho}\n\nFontes: {fonte_txt}."
+    return f"Não encontrei conteúdo suficiente para responder com segurança. Fonte consultada: {fonte_txt}."
 
 
-class CustomMedicalLLM(LLM):
-    """
-    LLM do LangChain que delega a geração ao `LLMClient` (Ollama/mock/fine-tuned).
-
-    O `system` é passado via kwargs em cada chamada; se ausente, usa o system
-    padrão configurado na chain.
-    """
+class CustomMedicalLLM(_LangChainLLM):
+    """Wrapper único para Ollama, adapter LoRA ou fallback extrativo."""
 
     client: Any = None
+    finetuned: Any = None
     system_prompt: Optional[str] = None
+    selected_backend: str = "auto"
 
-    def __init__(self, client: Optional[LLMClient] = None, system_prompt: Optional[str] = None, **kwargs):
+    def __init__(
+        self,
+        client: Optional[LLMClient] = None,
+        system_prompt: Optional[str] = None,
+        backend: Optional[str] = None,
+        **kwargs,
+    ):
+        selected = (backend or os.environ.get("MEDICAL_LLM_BACKEND") or "auto").lower()
         super().__init__(**kwargs)
-        # `client` e `system_prompt` são campos pydantic declarados acima.
-        self.client = client or get_client()
         self.system_prompt = system_prompt
+        self.selected_backend = selected
+        self.finetuned = None
+        self.client = client
+
+        if selected in {"finetuned", "hf", "local", "auto"}:
+            requested_ft = "auto" if selected == "auto" else ("hf" if selected in {"finetuned", "hf"} else "local")
+            candidate = FineTunedAssistant(backend=requested_ft)
+            if candidate.backend in {"hf", "local"}:
+                self.finetuned = candidate
+                return
+            if selected in {"finetuned", "hf", "local"}:
+                raise RuntimeError(
+                    "Backend fine-tuned solicitado, mas o adapter/dependências não estão disponíveis."
+                )
+
+        if selected in {"ollama", "mock", "auto"}:
+            self.client = client or get_client(backend=None if selected == "auto" else selected)
 
     @property
     def _llm_type(self) -> str:
@@ -83,7 +92,11 @@ class CustomMedicalLLM(LLM):
 
     @property
     def backend(self) -> str:
-        return getattr(self.client, "active_backend", "desconhecido")
+        if self.finetuned is not None:
+            return f"finetuned-{self.finetuned.backend}"
+        if self.client is not None:
+            return getattr(self.client, "active_backend", "ollama")
+        return "extractive"
 
     def _call(
         self,
@@ -93,8 +106,10 @@ class CustomMedicalLLM(LLM):
         **kwargs: Any,
     ) -> str:
         system = kwargs.get("system", self.system_prompt)
-        # Na demo offline (backend mock), usa resposta extrativa ancorada no
-        # contexto; com Ollama/fine-tuned, delega a geração ao cliente real.
-        if self.backend == "mock":
-            return _mock_grounded(prompt)
-        return self.client.generate(prompt, system=system)
+        if self.finetuned is not None:
+            return self.finetuned.ask(prompt, system=system)
+        if self.client is not None and self.backend != "mock":
+            return self.client.generate(prompt, system=system)
+        # O mock antigo não é usado para validar conteúdo clínico. Sem um modelo
+        # real, a resposta fica extrativa e visivelmente ancorada no RAG.
+        return _extractive_grounded(prompt)

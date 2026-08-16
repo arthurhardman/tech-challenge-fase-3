@@ -185,7 +185,7 @@ def plotar_feature_importance(nome: str, modelo, feature_names: list, top_n: int
     df_imp = df_imp.sort_values("importance", ascending=False).head(top_n)
 
     fig, ax = plt.subplots(figsize=(8, max(4, top_n // 2)))
-    sns.barplot(data=df_imp, x="importance", y="feature", palette="viridis", ax=ax)
+    sns.barplot(data=df_imp, x="importance", y="feature", color="steelblue", ax=ax)
     ax.set_title(f"Feature Importance (Top {top_n}) — {nome}")
     ax.set_xlabel("Importância")
     ax.set_ylabel("")

@@ -3,20 +3,17 @@ dataset_prep.py
 ----------------
 Preparação do dataset de fine-tuning do assistente médico (Fase 3).
 
-Combina três fontes, todas convertidas para um formato único de
+Combina quatro fontes, todas convertidas para um formato único de
 instruction-tuning (estilo Alpaca: instruction / input / output):
 
   1. MedQuAD  — pares pergunta/resposta de saúde extraídos de fontes do
      NIH (NINDS, NIDDK, CDC), em XML. Fonte pública, sem dados de pacientes.
   2. PubMedQA — perguntas clínicas de pesquisa com contexto (abstract) e
      resposta longa, derivadas de publicações do PubMed. Fonte pública.
-  3. Protocolos internos (sintéticos) — exemplos SINTÉTICOS no estilo dos
-     documentos que um hospital real usaria (protocolos de conduta, FAQ de
-     médicos, modelos de laudo/receita), no domínio de SRAG — o mesmo
-     domínio clínico da Fase 1/2 deste projeto. Nenhum dado de paciente
-     real é usado; tudo é gerado para fins de demonstração do pipeline.
-     Em produção, este bloco seria substituído pelos documentos reais do
-     hospital, passando pela mesma etapa de anonimização abaixo.
+  3. Protocolos oficiais SRAG — perguntas/respostas curadas com referência de
+     arquivo e página, usadas para reforçar o domínio específico do projeto.
+  4. Exemplos internos sintéticos — poucos modelos de protocolo/laudo/receita
+     mantidos somente para representar formatos internos pedidos no challenge.
 
 Etapas de curadoria aplicadas a TODAS as fontes:
   - normalização de texto (espaços, entidades HTML/XML residuais);
@@ -102,13 +99,18 @@ _NL_RE = re.compile(r"\n{3,}")
 # substituir os exemplos sintéticos (CPF, telefone BR, e-mail, prontuário,
 # nomes precedidos de "Sr./Sra./Dr.", datas no formato dd/mm/aaaa).
 _PII_PATTERNS = [
-    (re.compile(r"\b\d{3}\.\d{3}\.\d{3}-\d{2}\b"), "[CPF_REMOVIDO]"),
+    (re.compile(r"\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b"), "[CPF_REMOVIDO]"),
+    (re.compile(r"\b\d{15}\b"), "[CNS_REMOVIDO]"),
     (re.compile(r"\b\(?\d{2}\)?[\s-]?9?\d{4}[\s-]?\d{4}\b"), "[TELEFONE_REMOVIDO]"),
     (re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b"), "[EMAIL_REMOVIDO]"),
     (re.compile(r"\b(?:prontu[áa]rio|registro)\s*n?[ºo°]?\s*[:\-]?\s*\d{4,}\b", re.I),
      "[PRONTUARIO_REMOVIDO]"),
-    (re.compile(r"\b(?:Sr\.?|Sra\.?|Dr\.?|Dra\.?)\s+[A-ZÀ-Ý][a-zà-ÿ]+(?:\s+[A-ZÀ-Ý][a-zà-ÿ]+)*"),
-     "[NOME_REMOVIDO]"),
+    (re.compile(
+        r"\b(?:paciente|nome(?:\s+do\s+paciente)?|sr\.?|sra\.?|dr\.?|dra\.?)"
+        r"\s*[:\-]?\s+[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ]+"
+        r"(?:\s+(?:da|de|do|das|dos|e)?\s*[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ]+){1,5}",
+        re.I,
+    ), "[NOME_REMOVIDO]"),
     (re.compile(r"\b\d{2}/\d{2}/\d{4}\b"), "[DATA_REMOVIDA]"),
 ]
 
@@ -195,7 +197,42 @@ def load_pubmedqa(raw_dir: Optional[Path] = None) -> List[InstructionExample]:
 
 
 # ---------------------------------------------------------------------------
-# Fonte 3: Protocolos internos SINTÉTICOS (domínio SRAG, coerente com F1/F2)
+# Fonte 3: perguntas curadas a partir de protocolos oficiais de SRAG
+# ---------------------------------------------------------------------------
+def load_official_srag(path: Optional[Path] = None) -> List[InstructionExample]:
+    """Carrega pares pergunta/resposta com referência de arquivo e página.
+
+    Esses exemplos complementam PubMedQA/MedQuAD com o domínio específico do
+    projeto. Eles foram curados a partir dos protocolos oficiais versionados em
+    ``data/knowledge_base/official/protocols``.
+    """
+    path = Path(path or (_PROJECT_ROOT / "data" / "knowledge_base" / "official" / "protocol_faq.jsonl"))
+    if not path.exists():
+        return []
+    examples: List[InstructionExample] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        item = json.loads(line)
+        question = clean_text(item.get("question", ""))
+        answer = clean_text(item.get("answer", ""))
+        if not question or len(answer) < 20:
+            continue
+        source = item.get("source", "protocolo_oficial")
+        page = item.get("page")
+        source_label = f"{source}, p. {page}" if page is not None else source
+        examples.append(InstructionExample(
+            instruction=question,
+            input="",
+            output=answer,
+            source=source_label,
+            category="protocolo_oficial",
+        ))
+    return examples
+
+
+# ---------------------------------------------------------------------------
+# Fonte 4: Protocolos internos SINTÉTICOS (domínio SRAG, coerente com F1/F2)
 # ---------------------------------------------------------------------------
 def synthetic_hospital_examples() -> List[InstructionExample]:
     """
@@ -345,11 +382,11 @@ def build_dataset(
     out_dir: Optional[Path] = None,
     max_medquad: Optional[int] = 1500,
     max_pubmedqa: Optional[int] = 1000,
-    synthetic_oversample: int = 20,
+    synthetic_oversample: int = 5,
     seed: int = 42,
 ) -> dict:
     """
-    Executa o pipeline completo: carrega as 3 fontes, limpa, deduplica,
+    Executa o pipeline completo: carrega as 4 fontes, limpa, deduplica,
     anonimiza, faz split e grava train/val/test.jsonl + um dataset_card.
 
     `max_medquad` / `max_pubmedqa` limitam o tamanho (amostragem
@@ -372,6 +409,7 @@ def build_dataset(
 
     medquad = load_medquad(raw_dir / "medquad")
     pubmedqa = load_pubmedqa(raw_dir / "pubmedqa")
+    official = load_official_srag()
     synthetic = synthetic_hospital_examples()
 
     if max_medquad is not None and len(medquad) > max_medquad:
@@ -380,23 +418,25 @@ def build_dataset(
         pubmedqa = rng.sample(pubmedqa, max_pubmedqa)
 
     public_examples = deduplicate(medquad + pubmedqa)
+    official = deduplicate(official)
     synthetic = deduplicate(synthetic)
     public_examples = anonymize_examples(public_examples)
+    official = anonymize_examples(official)
     synthetic = anonymize_examples(synthetic)
 
-    # Split feito só sobre os dados públicos + 1 cópia dos sintéticos, para
-    # que val/test reflitam a distribuição real (sem oversampling).
-    train, val, test = split_dataset(public_examples + synthetic, seed=seed)
+    # Val/test continuam sem repetição. Como agora temos dezenas de exemplos
+    # oficiais de SRAG, o peso dos sintéticos pode ser bem menor que antes.
+    train, val, test = split_dataset(public_examples + official + synthetic, seed=seed)
 
     # Oversampling aplicado apenas ao treino, e apenas às linhas sintéticas
     # que caíram no split de treino.
     synthetic_keys = {ex.key() for ex in synthetic}
     train_synthetic = [ex for ex in train if ex.key() in synthetic_keys]
-    train_public = [ex for ex in train if ex.key() not in synthetic_keys]
-    train = train_public + train_synthetic * synthetic_oversample
+    train_regular = [ex for ex in train if ex.key() not in synthetic_keys]
+    train = train_regular + train_synthetic * synthetic_oversample
     rng.shuffle(train)
 
-    all_examples = train_public + train_synthetic + val + test  # para stats "reais"
+    all_examples = train_regular + train_synthetic + val + test  # para stats "reais"
 
     _write_jsonl(train, out_dir / "train.jsonl")
     _write_jsonl(val, out_dir / "val.jsonl")
@@ -405,13 +445,14 @@ def build_dataset(
     stats = {
         "total_exemplos_unicos": len(all_examples),
         "train_linhas_gravadas": len(train),
-        "train_exemplos_unicos": len(train_public) + len(train_synthetic),
+        "train_exemplos_unicos": len(train_regular) + len(train_synthetic),
         "val": len(val),
         "test": len(test),
         "synthetic_oversample_factor": synthetic_oversample,
         "por_fonte": {
             "MedQuAD": len(medquad),
             "PubMedQA": len(pubmedqa),
+            "Protocolos oficiais SRAG": len(official),
             "Protocolos internos (sintéticos)": len(synthetic),
         },
         "por_categoria": _count_by(all_examples, "category"),
@@ -436,8 +477,8 @@ def _write_dataset_card_md(stats: dict, path: Path) -> None:
     lines = [
         "# Dataset Card — Assistente Médico (Fase 3)",
         "",
-        "Dataset de instruction-tuning combinando fontes públicas e exemplos",
-        "sintéticos no estilo de documentos internos hospitalares.",
+        "Dataset de instruction-tuning combinando literatura pública, protocolos oficiais",
+        "de SRAG e poucos exemplos sintéticos de formatos internos hospitalares.",
         "",
         f"- **Total de exemplos únicos:** {stats['total_exemplos_unicos']}",
         f"- **Val / Test:** {stats['val']} / {stats['test']} (sem oversampling)",
@@ -460,23 +501,14 @@ def _write_dataset_card_md(stats: dict, path: Path) -> None:
         "## Observações sobre privacidade",
         "",
         "- MedQuAD e PubMedQA são datasets públicos, sem dados identificáveis de pacientes.",
-        "- Os exemplos de \"protocolo interno\", \"faq\", \"laudo\" e \"receita\" são "
-        "**sintéticos/fictícios**, criados apenas para dar ao pipeline o formato que os "
-        "documentos reais do hospital teriam.",
-        "- Todas as fontes passam pela mesma etapa de anonimização "
-        "(`src/finetuning/dataset_prep.py::anonymize`) antes de entrar no dataset final — "
-        "isso é o que garante que, ao trocar os exemplos sintéticos por documentos reais do "
-        "hospital, CPF, telefone, e-mail, nome de paciente e número de prontuário sejam "
-        "removidos automaticamente.",
+        "- Os 100 exemplos de protocolo SRAG foram curados a partir dos documentos oficiais e mantêm referência de fonte/página.",
+        "- Apenas os poucos exemplos de formato interno (laudo/receita/procedimento e FAQ interna) são sintéticos; eles representam os tipos de documentos pedidos no challenge.",
+        "- Todas as fontes passam pela mesma etapa de anonimização (`src/finetuning/dataset_prep.py::anonymize`) antes de entrar no dataset final.",
         "",
-        "## Nota sobre o oversampling dos protocolos internos",
+        "## Nota sobre o oversampling dos exemplos internos",
         "",
-        "Os exemplos de protocolo/FAQ/laudo/receita são propositalmente poucos neste "
-        "repositório de demonstração (ver `synthetic_hospital_examples()`), então foram "
-        "repetidos apenas no split de treino para o fine-tuning não ignorá-los diante do "
-        "volume de dados públicos. Val/test usam os exemplos originais, sem repetição, "
-        "para as métricas não ficarem infladas. Com documentos reais do hospital em maior "
-        "volume, o oversampling deixa de ser necessário (ajuste `synthetic_oversample=1`).",
+        "Os exemplos sintéticos de formato interno são poucos quando comparados à literatura pública. Por isso, eles podem ser repetidos somente no split de treino para não desaparecerem no volume total.",
+        "Val/test continuam sem repetição. Como o dataset agora também possui 100 exemplos oficiais de SRAG, o oversampling padrão foi reduzido para 5x.",
     ]
     path.write_text("\n".join(lines), encoding="utf-8")
 
@@ -489,7 +521,7 @@ def main():
     parser.add_argument("--build", action="store_true", help="Executa o pipeline completo.")
     parser.add_argument("--max-medquad", type=int, default=1500)
     parser.add_argument("--max-pubmedqa", type=int, default=1000)
-    parser.add_argument("--synthetic-oversample", type=int, default=20)
+    parser.add_argument("--synthetic-oversample", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 

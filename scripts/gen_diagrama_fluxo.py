@@ -57,9 +57,9 @@ def main() -> Path:
     e = caixa(ax, (1.1, 9.2), 2.6, 0.8, "Pergunta do médico\n(+ paciente_id)", AZUL)
     g_in = caixa(ax, (1.1, 8.0), 2.6, 0.8, "Guardrail de entrada\n(bloqueia prescrição)", LARANJA)
     rag = caixa(ax, (0.3, 6.6), 1.7, 0.9, "Retriever\nTF-IDF\n(protocolos)", VERDE)
-    pdb = caixa(ax, (2.2, 6.6), 1.5, 0.9, "PatientDB\n(prontuários)", VERDE)
-    llm = caixa(ax, (1.1, 5.2), 2.6, 0.8, "LLM customizada\n(Ollama / fine-tuned / mock)", AZUL)
-    g_out = caixa(ax, (1.1, 4.0), 2.6, 0.8, "Guardrail de saída\n(disclaimer + fontes)", LARANJA)
+    pdb = caixa(ax, (2.2, 6.6), 1.5, 0.9, "PatientDB\n(SQLite / JSON)", VERDE)
+    llm = caixa(ax, (1.1, 5.2), 2.6, 0.8, "LLM customizada\n(LoRA / Ollama / local)", AZUL)
+    g_out = caixa(ax, (1.1, 4.0), 2.6, 0.8, "Guardrail de saída\n(bloqueio + validação)", LARANJA)
     resp = caixa(ax, (1.1, 2.8), 2.6, 0.8, "Resposta + FONTES\n(explainability)", AZUL, fc="#eaf3ea")
 
     seta(ax, (2.4, 9.2), (2.4, 8.8))

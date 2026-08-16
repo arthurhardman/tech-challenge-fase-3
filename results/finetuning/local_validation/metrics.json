@@ -1,0 +1,232 @@
+{
+  "mode": "real-local-validation",
+  "device": "cpu",
+  "pretraining_pairs": 95,
+  "training_examples": 80,
+  "evaluation_examples": 20,
+  "pretraining_final_loss": 5.782166202863057,
+  "finetuning_final_loss": 3.4327704906463623,
+  "mean_token_f1": 0.21112203820848524,
+  "pretraining_history": [
+    {
+      "epoch": 1,
+      "loss": 6.939237475395203
+    },
+    {
+      "epoch": 2,
+      "loss": 5.782166202863057
+    }
+  ],
+  "finetuning_history": [
+    {
+      "epoch": 1,
+      "loss": 6.2269104480743405
+    },
+    {
+      "epoch": 2,
+      "loss": 5.759730577468872
+    },
+    {
+      "epoch": 3,
+      "loss": 5.386520051956177
+    },
+    {
+      "epoch": 4,
+      "loss": 5.09434757232666
+    },
+    {
+      "epoch": 5,
+      "loss": 4.844652080535889
+    },
+    {
+      "epoch": 6,
+      "loss": 4.623027181625366
+    },
+    {
+      "epoch": 7,
+      "loss": 4.385370779037475
+    },
+    {
+      "epoch": 8,
+      "loss": 4.203035569190979
+    },
+    {
+      "epoch": 9,
+      "loss": 3.994245195388794
+    },
+    {
+      "epoch": 10,
+      "loss": 3.8052982330322265
+    },
+    {
+      "epoch": 11,
+      "loss": 3.634855341911316
+    },
+    {
+      "epoch": 12,
+      "loss": 3.4327704906463623
+    }
+  ],
+  "examples": [
+    {
+      "question": "O que caracteriza uma síndrome gripal suspeita de covid-19?",
+      "reference": "Quadro respiratório agudo com pelo menos dois sinais ou sintomas entre febre, calafrios, dor de garganta, dor de cabeça, tosse, coriza e alterações do olfato ou paladar. A febre pode estar ausente na covid-19.",
+      "prediction": "o guia orienta o guia orienta a vigilância orienta a vigilância orienta a data de amostra, outro, outro, outro, outro, outro, mas e - pcr ou outro.",
+      "token_f1": 0.28571428571428575,
+      "source": "guia_srag_ministerio_saude_2025.pdf",
+      "page": 4
+    },
+    {
+      "question": "O que fazer quando um paciente com síndrome gripal apresenta fatores de risco para complicações?",
+      "reference": "Esses pacientes devem ser monitorados atentamente quanto a critérios de evolução para SRAG e orientados a procurar o serviço de saúde imediatamente se houver piora clínica.",
+      "prediction": "o guia orienta a data de amostra, com o guia, 2 e 9 para não.",
+      "token_f1": 0.26666666666666666,
+      "source": "guia_srag_ministerio_saude_2025.pdf",
+      "page": 5
+    },
+    {
+      "question": "Qual sistema deve receber a notificação de casos hospitalizados de SRAG?",
+      "reference": "Casos hospitalizados de SRAG devem ser notificados no SIVEP-Gripe, conforme os fluxos de vigilância apresentados pelo Ministério da Saúde.",
+      "prediction": "o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta a - gripe e guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia orienta o guia",
+      "token_f1": 0.0425531914893617,
+      "source": "guia_srag_ministerio_saude_2025.pdf",
+      "page": 2
+    },
+    {
+      "question": "Em que momento do atendimento devem ser aplicadas medidas de prevenção e controle?",
+      "reference": "As medidas de prevenção e controle devem ser aplicadas desde a chegada e triagem do paciente, durante toda a assistência, até alta, transferência ou óbito.",
+      "prediction": "o guia orienta a coleta de amostra, mas e coleta de forma, mas e coleta de forma, mas.",
+      "token_f1": 0.3137254901960784,
+      "source": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf",
+      "page": 4
+    },
+    {
+      "question": "Quando as amostras respiratórias devem ser coletadas para detecção viral?",
+      "reference": "As amostras de secreções respiratórias devem ser coletadas preferencialmente até o sétimo dia após o início dos sintomas.",
+      "prediction": "o guia orienta o guia orienta de forma como e orienta o guia orienta o guia orienta o guia orienta o protocolo orienta o protocolo de amostra de amostra, mas de amostra, mas e coleta de forma como ser protocolo de amostra e resposta e resposta e início de amostra e resposta.",
+      "token_f1": 0.16216216216216217,
+      "source": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf",
+      "page": 6
+    },
+    {
+      "question": "Um teste rápido sorológico negativo para covid-19 exclui o diagnóstico?",
+      "reference": "Não. O protocolo ressalta que um resultado negativo no teste sorológico não exclui o diagnóstico de covid-19 e que esse teste não deve ser usado isoladamente para diagnóstico.",
+      "prediction": "o guia orienta a data de amostra, outro, 2 e 9 para não de biologia.",
+      "token_f1": 0.24000000000000005,
+      "source": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf",
+      "page": 8
+    },
+    {
+      "question": "Que campos podem compor um modelo de registro de triagem para síndrome respiratória?",
+      "reference": "Um registro de triagem pode organizar idade, sintomas respiratórios, presença de dispneia ou desconforto respiratório, saturação de oxigênio, piora de doença de base e sinais de instabilidade, mantendo os dados de identificação fora da base de demonstração.",
+      "prediction": "o guia orienta o guia orienta o guia orienta deve ser.",
+      "token_f1": 0.03636363636363636,
+      "source": "guia_srag_ministerio_saude_2025.pdf",
+      "page": 4
+    },
+    {
+      "question": "Quais sinais de gravidade devem ser observados em uma síndrome gripal suspeita de covid-19?",
+      "reference": "Os sinais listados incluem dispneia, desconforto respiratório, saturação de oxigênio menor ou igual a 94% e exacerbação de doença preexistente.",
+      "prediction": "o guia orienta o guia orienta o guia orienta a vigilância orienta ficha deve ser guia, mas e - pcr, mas com a - pcr, mas e - pcr, mas e 9 - pcr, mas e inapetência.",
+      "token_f1": 0.14925373134328357,
+      "source": "guia_srag_ministerio_saude_2025.pdf",
+      "page": 2
+    },
+    {
+      "question": "Que tipo de amostra deve ser coletada em pacientes hospitalizados com SRAG?",
+      "reference": "Pacientes hospitalizados com SRAG devem ter amostras de secreções respiratórias coletadas para exame laboratorial, como painel viral ou RT-PCR multiplex, preferencialmente antes do início do tratamento.",
+      "prediction": "o guia orienta a ficha do guia, mas e inapetência.",
+      "token_f1": 0.13953488372093023,
+      "source": "guia_srag_ministerio_saude_2025.pdf",
+      "page": 5
+    },
+    {
+      "question": "Como o guia de vigilância integrada resume a definição de SRAG hospitalizado?",
+      "reference": "É um indivíduo com síndrome gripal que apresenta dispneia ou desconforto respiratório, pressão ou dor persistente no tórax, saturação de oxigênio menor ou igual a 94% em ar ambiente ou cianose de lábios ou rosto. Óbitos por SRAG também são considerados, independentemente de hospitalização.",
+      "prediction": "o guia orienta o guia orienta de forma registra o protocolo orienta o.",
+      "token_f1": 0.0625,
+      "source": "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf",
+      "page": 17
+    },
+    {
+      "question": "O que representa o campo NU_IDADE_N no SIVEP-Gripe?",
+      "reference": "NU_IDADE_N registra a idade informada ou calculada para o paciente. O tipo da idade é indicado por TP_IDADE, que diferencia dias, meses e anos.",
+      "prediction": "o guia orienta a unidade de registra o paciente, com ou ignorado.",
+      "token_f1": 0.38095238095238093,
+      "source": "dicionario_sivep_2019_2025.pdf",
+      "page": 4
+    },
+    {
+      "question": "Que informações de imagem aparecem na ficha de notificação de SRAG?",
+      "reference": "A ficha possui campos para resultado de raio X de tórax e aspecto da tomografia, com categorias próprias e opção de exame não realizado.",
+      "prediction": "o guia orienta a ficha deve ser a coleta e inapetência de amostra, mas.",
+      "token_f1": 0.2857142857142857,
+      "source": "ficha_notificacao_srag_2025.pdf",
+      "page": 2
+    },
+    {
+      "question": "Como a vacinação contra covid-19 aparece no dicionário do SIVEP?",
+      "reference": "O campo VACINA_COV informa se o paciente recebeu vacina contra covid-19, com categorias sim, não e ignorado.",
+      "prediction": "o guia orienta o protocolo a unidade a unidade a unidade a unidade a unidade a data de amostra, mas e 9 para não, mas e 9 para não deve ser, mas e 9 para não deve ser quando o paciente, mas e 9 para não deve ser quando o paciente, mas e 9 para não deve ser exame - pcr ou ignorado.",
+      "token_f1": 0.21978021978021978,
+      "source": "dicionario_sivep_2019_2025.pdf",
+      "page": 10
+    },
+    {
+      "question": "Qual é a temporalidade de notificação da SRAG por covid-19 no quadro de vigilância integrada?",
+      "reference": "No contexto de SRAG por covid-19, o quadro de vigilância integrada indica notificação em até 24 horas no sistema.",
+      "prediction": "o guia orienta o guia orienta a data de suporte - pcr ou outro, mas e menor ou outro.",
+      "token_f1": 0.22727272727272724,
+      "source": "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf",
+      "page": 17
+    },
+    {
+      "question": "O que o campo DT_SIN_PRI representa no SIVEP-Gripe?",
+      "reference": "DT_SIN_PRI registra a data dos primeiros sintomas do caso. O dicionário informa que é um campo obrigatório e que essa data deve ser compatível com a data de preenchimento e digitação da notificação.",
+      "prediction": "o guia orienta a unidade de registra o paciente, com ou ignorado.",
+      "token_f1": 0.24489795918367346,
+      "source": "dicionario_sivep_2019_2025.pdf",
+      "page": 2
+    },
+    {
+      "question": "O que o campo CS_ESCOL_N representa?",
+      "reference": "CS_ESCOL_N registra o nível de escolaridade do paciente, com categorias para sem escolaridade, ensino fundamental, médio, superior, não se aplica e ignorado.",
+      "prediction": "o guia orienta a unidade de amostra, com o paciente, com ou ignorado.",
+      "token_f1": 0.36363636363636365,
+      "source": "dicionario_sivep_2019_2025.pdf",
+      "page": 5
+    },
+    {
+      "question": "Quando o campo TP_ANTIVIR deve ser informado?",
+      "reference": "TP_ANTIVIR é habilitado quando o campo ANTIVIRAL indica uso de antiviral. Ele permite registrar oseltamivir, zanamivir ou outro antiviral.",
+      "prediction": "o guia orienta a data de suporte ou outro, 2 ou outro, 2 e 9 para não, não.",
+      "token_f1": 0.2727272727272727,
+      "source": "dicionario_sivep_2019_2025.pdf",
+      "page": 14
+    },
+    {
+      "question": "Como o dicionário codifica o uso de suporte ventilatório?",
+      "reference": "SUPORT_VEN usa 1 para suporte invasivo, 2 para suporte não invasivo, 3 para não utilizou e 9 para ignorado.",
+      "prediction": "o guia orienta o protocolo de forma registra se o paciente de amostra, não e 9 para ignorado.",
+      "token_f1": 0.3333333333333333,
+      "source": "dicionario_sivep_2019_2025.pdf",
+      "page": 17
+    },
+    {
+      "question": "Quais categorias aparecem no resultado do teste antigênico?",
+      "reference": "O resultado do teste antigênico pode ser positivo, negativo, inconclusivo, não realizado, aguardando resultado ou ignorado.",
+      "prediction": "o guia orienta o guia orienta a - pcr como por - pcr ou outro, outro, outro, mas, outro, mas, mas, mas, outro, outro, outro, outro, outro, outro, mas e - pcr ou outro, mas, não, não, não, não, mas e - pcr, não, não, não, não",
+      "token_f1": 0.15217391304347824,
+      "source": "dicionario_sivep_2019_2025.pdf",
+      "page": 18
+    },
+    {
+      "question": "O que o campo PCR_VSR representa?",
+      "reference": "PCR_VSR indica a identificação de vírus sincicial respiratório entre os vírus pesquisados por RT-PCR ou outro método de biologia molecular.",
+      "prediction": "o protocolo a unidade a notificação a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a unidade a data.",
+      "token_f1": 0.043478260869565216,
+      "source": "dicionario_sivep_2019_2025.pdf",
+      "page": 21
+    }
+  ]
+}

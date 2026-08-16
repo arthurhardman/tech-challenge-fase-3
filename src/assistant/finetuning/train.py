@@ -1,15 +1,17 @@
 """
 train.py
 --------
-Pipeline de fine-tuning da LLM com dados médicos internos (requisito 1).
+Pipeline legado de fine-tuning mantido para compatibilidade com a primeira versão da Fase 3.
 
-Dois modos, na mesma filosofia do cliente Ollama↔mock da Fase 2:
+Este módulo continua disponível para reproduzir a demonstração antiga. O fluxo principal atual usa `src/finetuning/train_lora.py` para LoRA/PEFT e `src/finetuning/local_validation.py` para validação real em CPU.
+
+Dois modos legados:
 
   --mode real : fine-tuning por LoRA/PEFT sobre um modelo-base do Hugging Face
                 (LLaMA/Falcon/Mistral…). Requer GPU, `transformers`, `peft`,
                 `datasets` e download do modelo-base. É o caminho de produção.
 
-  --mode demo : (padrão) executa TODO o pipeline de dados e um laço de
+  --mode demo : executa o pipeline antigo com um laço de
                 treinamento SIMULADO que consome o dataset real, produz uma
                 curva de perda decrescente e salva os mesmos artefatos
                 (métricas + manifesto do adapter). Roda em qualquer máquina,

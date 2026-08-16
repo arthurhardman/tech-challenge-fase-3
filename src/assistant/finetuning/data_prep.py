@@ -24,7 +24,14 @@ _PII_PATTERNS = {
     "EMAIL": re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b"),
     "DATA": re.compile(r"\b\d{2}/\d{2}/\d{4}\b"),
     "RG": re.compile(r"\bRG[:\s]*\d[\d.\-]{5,}\b", re.IGNORECASE),
-    "NOME_ROTULADO": re.compile(r"\b(?:paciente|sr\.?|sra\.?|nome)[:\s]+[A-ZÁÉÍÓÚ][a-záéíóú]+(?:\s+[A-ZÁÉÍÓÚ][a-záéíóú]+)+", re.IGNORECASE),
+    # Nomes só são removidos quando aparecem depois de um rótulo explícito.
+    # Isso evita apagar nomes de doenças/localidades no meio de um protocolo.
+    "NOME_ROTULADO": re.compile(
+        r"\b(?:paciente|nome(?:\s+do\s+paciente)?|sr\.?|sra\.?|dr\.?|dra\.?)"
+        r"\s*[:\-]?\s+[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ]+"
+        r"(?:\s+(?:da|de|do|das|dos|e)?\s*[A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ]+){1,5}",
+        re.IGNORECASE,
+    ),
 }
 
 
