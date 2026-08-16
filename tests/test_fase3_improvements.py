@@ -68,9 +68,40 @@ def test_dataset_principal_inclui_srag_oficial():
 def test_treino_local_real_gera_checkpoint(tmp_path):
     metrics = run_local_validation(
         output_dir=tmp_path,
-        cfg=LocalConfig(pretrain_epochs=1, finetune_epochs=1, batch_size=16),
+        cfg=LocalConfig(
+            pretrain_epochs=1,
+            general_medical_epochs=1,
+            finetune_epochs=1,
+            batch_size=16,
+            max_pretraining_pairs=20,
+            max_general_medical_examples=20,
+        ),
     )
     assert metrics["mode"] == "real-local-validation"
     assert metrics["training_examples"] > 0
     assert (tmp_path / "tiny_transformer.pt").exists()
     assert (tmp_path / "metrics.json").exists()
+
+
+def test_fallback_local_detecta_saida_degenerada():
+    from src.assistant.chains.llm_backend import _local_output_is_low_quality
+
+    assert _local_output_is_low_quality("o do é a notificação a. a do o do o é.")
+    assert not _local_output_is_low_quality(
+        "Pacientes com sinais de agravamento devem ser reavaliados conforme o protocolo clínico."
+    )
+
+
+def test_fallback_extrativo_escolhe_frase_relacionada_a_pergunta():
+    from src.assistant.chains.llm_backend import _extractive_grounded
+
+    prompt = """CONTEXTO CLÍNICO RECUPERADO:
+[Fonte: protocolo.pdf, p. 4]
+A vacinação deve ser registrada no sistema. Pacientes com dispneia e saturação baixa devem ser avaliados quanto a sinais de gravidade.
+
+PERGUNTA DO MÉDICO:
+Quais sinais de gravidade respiratória devem ser revisados?
+"""
+    resposta = _extractive_grounded(prompt)
+    assert "dispneia" in resposta.lower()
+    assert "protocolo.pdf, p. 4" in resposta

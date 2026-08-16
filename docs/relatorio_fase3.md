@@ -94,15 +94,20 @@ processo de treino em CPU.
 
 | Métrica | Resultado |
 |---|---:|
-| Pares de pré-treino | 95 |
-| Exemplos de fine-tuning | 80 |
-| Exemplos de avaliação | 20 |
-| Loss final do pré-treino | 5.7822 |
-| Loss final do fine-tuning | 3.4328 |
-| Token F1 médio | 0.2111 |
+| Pares de pré-treino em protocolos | 300 |
+| Q&As médicos gerais (MedQuAD/PubMedQA) | 300 |
+| Q&As SRAG no ajuste final | 80 |
+| Total de exemplos usados no fine-tuning local | 380 |
+| Exemplos de avaliação separados | 20 |
+| Loss final do pré-treino | 5.6850 |
+| Loss final do ajuste SRAG | 2.1714 |
+| Token F1 médio | 0.2417 |
+| Token F1 mediano | 0.2375 |
 
 Esse modelo pequeno não substitui o LLM da entrega. Ele comprova que preparação,
-treino, checkpoint e inferência estão funcionando sem simulação.
+treino, checkpoint e inferência estão funcionando sem simulação. No conjunto de
+avaliação, o contexto é recuperado pelo retriever top-3 a partir da pergunta; a
+fonte/página de referência não é usada para montar a entrada do modelo.
 
 ---
 
@@ -223,7 +228,7 @@ python -m src.finetuning.train_lora --dry-run
 Resultado atual dos testes automatizados:
 
 ```text
-66 passed
+68 passed
 ```
 
 O adaptador SIVEP também foi testado separadamente com os quatro CSVs completos,

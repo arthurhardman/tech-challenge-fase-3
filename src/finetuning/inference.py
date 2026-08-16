@@ -89,8 +89,11 @@ class FineTunedAssistant:
         self._tokenizer = Tokenizer(vocab)
         self._local_cfg = Config(**checkpoint["config"])
         self._model = TinyTransformer(
-            checkpoint["vocab_size"], checkpoint["pad_id"],
-            max_len=max(self._local_cfg.max_src, self._local_cfg.max_tgt) + 4,
+            checkpoint["vocab_size"],
+            checkpoint["pad_id"],
+            d_model=self._local_cfg.d_model,
+            layers=self._local_cfg.layers,
+            max_len=max(self._local_cfg.max_src, self._local_cfg.max_tgt) + 12,
         )
         self._model.load_state_dict(checkpoint["model_state"])
         self._model.eval()
@@ -110,7 +113,7 @@ class FineTunedAssistant:
             messages.append({"role": "user", "content": user_content})
             return self._ask_hf(messages, max_new_tokens)
         if self.backend == "local":
-            return self._ask_local(question)
+            return self._ask_local(question, context=context)
         return self._ask_mock(question, context)
 
     def _ask_hf(self, messages: List[dict], max_new_tokens: int) -> str:
@@ -128,10 +131,29 @@ class FineTunedAssistant:
             out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
         ).strip()
 
-    def _ask_local(self, question: str) -> str:
+    def _ask_local(self, question: str, context: Optional[str] = None) -> str:
+        import re
         import torch
+
+        # O MedicalAssistant envia um prompt completo. Para o pequeno modelo local,
+        # reduzimos esse prompt ao mesmo formato usado durante o ajuste SRAG.
+        if "PERGUNTA DO MÉDICO:" in question:
+            match_q = re.search(r"PERGUNTA DO MÉDICO:\s*(.+?)(?:\n\n|$)", question, re.S)
+            match_c = re.search(
+                r"CONTEXTO CLÍNICO RECUPERADO:\s*(.+?)(?:\n\nDADOS DO PACIENTE|\n\nPERGUNTA DO MÉDICO:)",
+                question,
+                re.S,
+            )
+            clean_question = match_q.group(1).strip() if match_q else question
+            clean_context = match_c.group(1).strip() if match_c else ""
+            source_text = f"pergunta: {clean_question} contexto: {clean_context}"
+        elif context:
+            source_text = f"pergunta: {question} contexto: {context}"
+        else:
+            source_text = f"pergunta: {question}"
+
         ids = torch.tensor(
-            [self._tokenizer.encode(question, self._local_cfg.max_src)], dtype=torch.long
+            [self._tokenizer.encode(source_text, self._local_cfg.max_src)], dtype=torch.long
         )
         generated = self._model.generate(
             ids, self._tokenizer.bos_id, self._tokenizer.eos_id,

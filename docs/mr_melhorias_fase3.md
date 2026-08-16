@@ -51,12 +51,15 @@ O runner principal não usa mais a loss simulada como evidência de fine-tuning.
 
 | Métrica | Resultado |
 |---|---:|
-| Pares de pré-treino | 95 |
-| Exemplos de fine-tuning | 80 |
-| Exemplos de avaliação | 20 |
-| Loss final do pré-treino | 5.7822 |
-| Loss final do fine-tuning | 3.4328 |
-| Token F1 | 0.2111 |
+| Pares de pré-treino em protocolos | 300 |
+| Q&As médicos gerais (MedQuAD/PubMedQA) | 300 |
+| Q&As SRAG no ajuste final | 80 |
+| Total de exemplos usados no fine-tuning local | 380 |
+| Exemplos de avaliação separados | 20 |
+| Loss final do pré-treino | 5.6850 |
+| Loss final do ajuste SRAG | 2.1714 |
+| Token F1 médio | 0.2417 |
+| Token F1 mediano | 0.2375 |
 
 O caminho de entrega com LLM pré-treinada continua sendo LoRA/PEFT em `src/finetuning/train_lora.py`.
 
@@ -95,7 +98,7 @@ Executado de ponta a ponta em CPU em aproximadamente **25 s**.
 ### Testes automatizados
 
 ```text
-66 passed
+68 passed
 ```
 
 ### SIVEP completo

@@ -35,19 +35,82 @@ from src.llm.client import LLMClient, get_client
 from src.finetuning.inference import FineTunedAssistant
 
 
+def _content_tokens(text: str) -> set[str]:
+    stop = {
+        "a", "o", "as", "os", "de", "da", "do", "das", "dos", "e", "em",
+        "um", "uma", "para", "por", "com", "que", "qual", "quais", "como",
+        "este", "esta", "esse", "essa", "ser", "são", "no", "na", "nos", "nas",
+    }
+    return {
+        token
+        for token in re.findall(r"[a-zà-ÿ0-9]+", text.lower())
+        if len(token) >= 3 and token not in stop
+    }
+
+
 def _extractive_grounded(prompt: str) -> str:
-    """Fallback extrativo ancorado no contexto, usado somente sem modelo disponível."""
-    fontes = re.findall(r"\[Fonte:\s*([^\]]+)\]", prompt)
-    blocos = re.split(r"\[Fonte:[^\]]+\]\s*", prompt)
-    trecho = ""
-    if len(blocos) > 1:
-        bruto = blocos[1].split("DADOS DO PACIENTE")[0].split("PERGUNTA DO MÉDICO")[0]
-        frases = re.split(r"(?<=[.!?])\s+", bruto.strip())
-        trecho = " ".join(frases[:2]).strip()
+    """Resposta extrativa curta, escolhida entre os trechos já recuperados pelo RAG.
+
+    O fallback anterior pegava simplesmente as primeiras frases do primeiro chunk.
+    Agora usamos a própria pergunta para escolher a frase com maior sobreposição de
+    termos. É simples, determinístico e mantém a resposta ancorada no protocolo.
+    """
+    question_match = re.search(
+        r"PERGUNTA DO MÉDICO:\s*(.+?)(?:\n\n|$)", prompt, re.S
+    )
+    question = question_match.group(1).strip() if question_match else prompt
+    q_tokens = _content_tokens(question)
+
+    context_match = re.search(
+        r"CONTEXTO CLÍNICO RECUPERADO:\s*(.+?)(?:\n\nDADOS DO PACIENTE|\n\nPERGUNTA DO MÉDICO:)",
+        prompt,
+        re.S,
+    )
+    context = context_match.group(1).strip() if context_match else prompt
+
+    blocks = re.findall(
+        r"\[Fonte:\s*([^\]]+)\]\s*(.*?)(?=\n\n\[Fonte:|$)",
+        context,
+        re.S,
+    )
+    candidates: list[tuple[float, str, str]] = []
+    for source, text in blocks:
+        sentences = re.split(r"(?<=[.!?])\s+|\s+[•●]\s+", text.strip())
+        for sentence in sentences:
+            sentence = " ".join(sentence.split())
+            words = sentence.split()
+            if len(words) < 6 or len(words) > 90:
+                continue
+            s_tokens = _content_tokens(sentence)
+            overlap = len(q_tokens & s_tokens)
+            # Jaccard ajuda a não escolher uma frase enorme só por ter muitos termos.
+            union = len(q_tokens | s_tokens) or 1
+            score = overlap + (overlap / union)
+            candidates.append((score, sentence, source.strip()))
+
+    if candidates:
+        _, sentence, source = max(candidates, key=lambda item: item[0])
+        return f"Com base no contexto recuperado: {sentence}\n\nFonte: {source}."
+
+    fontes = re.findall(r"\[Fonte:\s*([^\]]+)\]", context)
     fonte_txt = ", ".join(fontes[:3]) or "fonte clínica recuperada"
-    if trecho:
-        return f"Com base no contexto recuperado: {trecho}\n\nFontes: {fonte_txt}."
-    return f"Não encontrei conteúdo suficiente para responder com segurança. Fonte consultada: {fonte_txt}."
+    return (
+        "Não encontrei conteúdo suficiente para responder com segurança. "
+        f"Fonte consultada: {fonte_txt}."
+    )
+
+
+def _local_output_is_low_quality(text: str) -> bool:
+    """Detecta respostas degeneradas do Transformer pequeno usado na validação CPU."""
+    words = re.findall(r"[a-zà-ÿ0-9]+", text.lower())
+    if len(words) < 8:
+        return True
+    content = [w for w in words if len(w) >= 4]
+    if len(set(content)) < 3:
+        return True
+    if len(set(words)) / max(1, len(words)) < 0.35:
+        return True
+    return False
 
 
 class CustomMedicalLLM(_LangChainLLM):
@@ -107,7 +170,13 @@ class CustomMedicalLLM(_LangChainLLM):
     ) -> str:
         system = kwargs.get("system", self.system_prompt)
         if self.finetuned is not None:
-            return self.finetuned.ask(prompt, system=system)
+            answer = self.finetuned.ask(prompt, system=system)
+            # O Transformer local prova o treino real, mas ainda é pequeno. Se ele
+            # produzir uma frase degenerada, preferimos devolver um trecho do RAG
+            # a mostrar texto sem qualidade clínica. O adapter LoRA não usa esse fallback.
+            if self.finetuned.backend == "local" and _local_output_is_low_quality(answer):
+                return _extractive_grounded(prompt)
+            return answer
         if self.client is not None and self.backend != "mock":
             return self.client.generate(prompt, system=system)
         # O mock antigo não é usado para validar conteúdo clínico. Sem um modelo

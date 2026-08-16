@@ -152,16 +152,21 @@ pip install -r requirements-fase3-local.txt
 python -m src.finetuning.local_validation
 ```
 
+A validação local agora usa uma base maior sem misturar o conjunto de teste: primeiro o modelo vê trechos dos protocolos, depois uma amostra de MedQuAD/PubMedQA e, por último, os exemplos curados de SRAG. As 20 perguntas de avaliação continuam fora do treinamento. Durante o teste, o contexto vem dos três melhores resultados do retriever; a fonte/página esperada não é usada para escolher o texto de entrada.
+
 Última execução validada neste projeto:
 
 | Métrica | Resultado |
 |---|---:|
-| Pares de pré-treino | 95 |
-| Exemplos de fine-tuning | 80 |
-| Exemplos de avaliação | 20 |
-| Loss final do pré-treino | 5.7822 |
-| Loss final do fine-tuning | 3.4328 |
-| Token F1 médio | 0.2111 |
+| Pares de pré-treino em protocolos | 300 |
+| Q&As médicos gerais (MedQuAD/PubMedQA) | 300 |
+| Q&As SRAG no ajuste final | 80 |
+| Total de exemplos usados no fine-tuning local | 380 |
+| Exemplos de avaliação separados | 20 |
+| Loss final do pré-treino | 5.6850 |
+| Loss final do ajuste SRAG | 2.1714 |
+| Token F1 médio | 0.2417 |
+| Token F1 mediano | 0.2375 |
 
 ---
 
@@ -408,7 +413,7 @@ python -m pytest tests -q
 Estado validado desta versão:
 
 ```text
-66 passed
+68 passed
 ```
 
 O pipeline completo `python run_fase3.py --mode local` também foi executado de

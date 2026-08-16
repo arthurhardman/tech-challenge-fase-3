@@ -7,6 +7,6 @@
     "q_proj",
     "v_proj"
   ],
-  "n_exemplos_treino": 627,
+  "n_exemplos_treino": 727,
   "observacao": "Manifesto de demonstração. Em modo 'real', aqui ficam os pesos do adapter."
 }

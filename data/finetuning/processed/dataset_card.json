@@ -1,23 +1,23 @@
 {
-  "total_exemplos_unicos": 2587,
-  "train_linhas_gravadas": 2095,
-  "train_exemplos_unicos": 2071,
-  "val": 258,
-  "test": 258,
-  "synthetic_oversample_factor": 5,
+  "total_exemplos_unicos": 146,
+  "train_linhas_gravadas": 118,
+  "train_exemplos_unicos": 118,
+  "val": 14,
+  "test": 14,
+  "synthetic_oversample_factor": 1,
   "por_fonte": {
-    "MedQuAD": 1500,
-    "PubMedQA": 1000,
+    "MedQuAD": 20,
+    "PubMedQA": 20,
     "Protocolos oficiais SRAG": 100,
     "Protocolos internos (sintéticos)": 6
   },
   "por_categoria": {
-    "literatura": 2481,
     "protocolo_oficial": 100,
-    "protocolo": 3,
+    "literatura": 40,
     "laudo": 1,
-    "faq": 1,
-    "receita": 1
+    "protocolo": 3,
+    "receita": 1,
+    "faq": 1
   },
   "seed": 42
 }
