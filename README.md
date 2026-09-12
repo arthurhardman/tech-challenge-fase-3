@@ -439,6 +439,30 @@ python run_fase3.py --mode skip-train --generate-synthetic
 
 ---
 
+## Interface visual
+
+A demonstração do assistente tem uma interface web em Streamlit:
+
+```bash
+streamlit run app/assistente_app.py
+```
+
+Quatro abas, cobrindo os requisitos do desafio:
+
+| Aba | O que mostra |
+|---|---|
+| 💬 **Consulta clínica** | pergunta do médico → resposta da LLM ajustada + fontes com arquivo/página |
+| 🧑‍⚕️ **Paciente** | registro real do SIVEP, risco, exames pendentes e o resumo enviado à LLM |
+| 🔀 **Fluxo automatizado** | execução do grafo LangGraph com a trilha percorrida e o alerta de risco |
+| 🔒 **Segurança e auditoria** | guardrail bloqueando prescrição + trilha de auditoria em tempo real |
+
+O adapter LoRA é carregado uma vez por sessão (`@st.cache_resource`): o primeiro
+acesso leva ~40 s e cada resposta ~20-30 s, porque a geração roda localmente.
+A barra lateral permite trocar o backend (`finetuned`, `auto`, `local`) e
+escolher o paciente que contextualiza as respostas.
+
+---
+
 ## CLI
 
 ```bash

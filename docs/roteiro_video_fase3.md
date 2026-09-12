@@ -42,16 +42,36 @@
 
 ## 3. Assistente contextualizado (6:30–9:30)
 
-- No notebook `08_finetuning_langchain.ipynb`, selecionar um paciente real anonimizado do SQLite.
-- Fazer uma pergunta sobre sinais de atenção no caso.
-- Mostrar a resposta e as fontes com arquivo/página.
-- Fazer uma pergunta geral de saúde para mostrar a recuperação complementar de MedQuAD/PubMedQA.
+**Gravar pela interface visual** — é mais legível que o terminal:
+
+```bash
+streamlit run app/assistente_app.py
+```
+
+- Abrir a aba **🧑‍⚕️ Paciente** e mostrar um caso real anonimizado do SIVEP:
+  risco, idade, comorbidades e o resumo clínico que é enviado à LLM.
+- Ir para **💬 Consulta clínica**, escolher uma pergunta de exemplo e consultar.
+- Mostrar, lado a lado, a resposta e o painel **📚 Fontes utilizadas** com
+  arquivo e página — é a explainability pedida no desafio.
+- Apontar o rodapé `backend: finetuned-hf`: prova de que quem respondeu foi o
+  modelo com o adapter LoRA, não um mock.
+- Fazer uma pergunta geral de saúde para mostrar a recuperação complementar de
+  MedQuAD/PubMedQA.
+
+> A primeira resposta demora ~40 s (carregamento do adapter) e as seguintes
+> ~20-30 s. Deixe o app aberto e faça uma pergunta antes de começar a gravar,
+> para o modelo já estar em memória.
 
 ## 4. Segurança e LangGraph (9:30–12:30)
 
-- Perguntar uma dose/prescrição direta e mostrar que o guardrail bloqueia.
-- Mostrar o fluxo `triagem → verificar_exames → emitir_alerta/sugerir_conduta → consolidar`.
-- Explicar que risco e exames vêm somente dos campos existentes no PatientDB; o fluxo não inventa medidas ausentes.
+- Na aba **🔀 Fluxo automatizado**, executar o grafo para o paciente de risco
+  vermelho. A trilha `triagem → verificar_exames → emitir_alerta → consolidar`
+  acende passo a passo e o alerta aparece destacado.
+- Explicar que risco e exames vêm somente dos campos existentes no PatientDB; o
+  fluxo não inventa medidas ausentes.
+- Na aba **🔒 Segurança e auditoria**, clicar em “Testar pedido de prescrição” e
+  mostrar o guardrail recusando a dose — é o requisito destacado em amarelo no
+  enunciado.
 
 ## 5. Avaliação, logs e fechamento (12:30–15:00)
 
@@ -61,7 +81,9 @@
   - aviso médico: 100%;
   - bloqueio de prescrição: 100%;
   - sanity checks MedQuAD/PubMedQA: 100%.
-- Abrir o log de auditoria e mostrar pergunta, paciente, fontes e decisão de guardrail.
+- Ainda na aba **🔒 Segurança e auditoria**, mostrar a trilha de auditoria
+  preenchida em tempo real pelas consultas feitas durante o vídeo: pergunta,
+  paciente, fontes, backend e decisão do guardrail.
 - Rodar `pytest tests -q` e mostrar o total de testes passando.
 - Encerrar lembrando que a solução é apoio à decisão e exige validação humana.
 
@@ -76,7 +98,9 @@
 - [ ] Conferir que `patients_sivep.db` foi criado.
 - [ ] Conferir que `results/finetuned_model/` tem `adapter_model.safetensors` e
       `run_info.json` — são a prova do fine-tuning real.
-- [ ] Deixar o notebook 08 aberto nos pontos principais.
+- [ ] Subir o app (`streamlit run app/assistente_app.py`) e fazer **uma pergunta
+      antes de gravar**, para o adapter já estar carregado em memória.
+- [ ] Deixar o notebook 08 aberto como material de apoio.
 - [ ] Deixar abertos: `eval_metrics.json`, `eval_report.json`, diagrama e audit log.
 
 ### Cobertura dos 4 itens exigidos no PDF

@@ -1,5 +1,5 @@
 .PHONY: install install-fase3-local test run run-fast run-quick lint \
-        fase3 fase3-local fase3-lora-dry fase3-lora-real fase3-dados-sinteticos \
+        fase3-app fase3 fase3-local fase3-lora-dry fase3-lora-real fase3-dados-sinteticos \
         fase3-eval fase3-fluxo fase3-test
 
 install:
@@ -26,6 +26,9 @@ fase3-lora-real:       ## fine-tuning LoRA real (GPU + requirements-finetuning.t
 
 fase3-dados-sinteticos: ## gera a base sintética antiga somente quando desejado
 	python scripts/gen_synthetic_data.py
+
+fase3-app:             ## interface visual do assistente (Streamlit)
+	streamlit run app/assistente_app.py
 
 fase3-eval:
 	python -m src.assistant.finetuning.evaluate
