@@ -67,22 +67,64 @@ Os exemplos sintéticos foram mantidos apenas para representar formatos como lau
 receita e procedimento interno. O domínio SRAG agora é reforçado principalmente
 pelos 100 exemplos oficiais, então o oversampling sintético pôde ser reduzido.
 
-### 3.2 LoRA/PEFT
+### 3.2 LoRA/PEFT — executado
 
-`src/finetuning/train_lora.py` implementa o caminho de fine-tuning de um modelo
-pré-treinado com LoRA/PEFT. O pipeline aceita Falcon, LLaMA ou Mistral conforme a
-configuração.
+`src/finetuning/train_lora.py` implementa o fine-tuning de um modelo
+pré-treinado com LoRA/PEFT. O `config.yaml` aceita Falcon, LLaMA, Mistral ou
+Qwen; basta trocar a chave `active`.
 
-O comando abaixo foi validado no ambiente atual:
+**O fine-tuning foi executado de verdade nesta entrega**, e não apenas validado.
 
-```bash
-python -m src.finetuning.train_lora --dry-run
+Modelo base escolhido: **Qwen2.5-1.5B-Instruct**. A escolha é uma consequência do
+hardware: a configuração original (Falcon-7B em 4-bit) depende de `bitsandbytes`,
+que só possui kernels para GPU NVIDIA. O treino foi feito em Apple Silicon (M4,
+16 GB de memória unificada), onde o caminho viável é carregar um modelo menor sem
+quantização. O enunciado pede "LLaMA, Falcon ou um outro", então a substituição
+está dentro do escopo.
+
+O `train_lora.py` detecta o device e ajusta a estratégia sozinho:
+
+| Device | Precisão | Quantização 4-bit |
+|---|---|---|
+| CUDA (NVIDIA) | bfloat16 | sim (QLoRA via bitsandbytes) |
+| MPS (Apple Silicon) | float16 | não |
+| CPU | float32 | não |
+
+Resultado da execução:
+
+| Item | Valor |
+|---|---|
+| Modelo base | `Qwen/Qwen2.5-1.5B-Instruct` |
+| Device | MPS (Apple M4) |
+| Parâmetros treináveis | 18.464.768 (**1,18%** de 1,56 B) |
+| Exemplos de treino | 2.095 |
+| Épocas / steps | 1 / 131 |
+| `max_seq_length` | 512 |
+| Duração | ~1 h 06 min |
+| **Loss de treino** | **1,3352** |
+| **Loss de validação** | **1,1879** |
+| Curva de loss | 1,946 → 1,219 |
+
+A loss de validação ficar abaixo da de treino indica que não houve overfitting no
+regime de 1 época.
+
+O adapter treinado (74 MB) fica em `results/finetuned_model/`:
+
+```text
+adapter_model.safetensors   # pesos LoRA
+adapter_config.json
+run_info.json               # device, losses e log_history medidos
+tokenizer.json / vocab.json / chat_template.jinja
 ```
 
-Resultado: 2.095 exemplos de treino no formato chat esperado.
+Para reproduzir:
 
-O treinamento LoRA completo exige GPU e as dependências de
-`requirements-finetuning.txt`.
+```bash
+pip install -r requirements-finetuning.txt
+python -m src.finetuning.dataset_prep --build
+python -m src.finetuning.train_lora            # treino real
+python -m src.finetuning.train_lora --dry-run  # só valida o dataset
+```
 
 ### 3.3 Validação real em CPU
 
@@ -197,7 +239,54 @@ backend, fontes e decisões de guardrail em log/JSONL.
 
 ## 8. Resultados da avaliação
 
-A avaliação usa 20 perguntas SRAG separadas da curadoria de treino.
+São duas avaliações complementares, com objetivos diferentes.
+
+### 8.1 Modelo ajustado vs. modelo base
+
+`src/finetuning/evaluate_finetune.py` gera a mesma pergunta nos dois modelos e
+compara com a resposta de referência do split de teste. Resultado com 14 exemplos
+amostrados de forma balanceada entre as categorias:
+
+| Categoria | n | ROUGE-L base | ROUGE-L ajustado | Ganho |
+|---|---:|---:|---:|---:|
+| Literatura (PubMedQA/MedQuAD) | 7 | 0,0467 | **0,1453** | 3,1× |
+| Protocolo oficial SRAG | 7 | 0,0683 | **0,1242** | 1,8× |
+| **Geral** | **14** | **0,0575** | **0,1347** | **2,3×** |
+
+Em uma amostragem anterior só com literatura (20 exemplos), o ganho foi de
+0,0491 → 0,1697 (3,5×). O fine-tuning melhora a aderência à resposta esperada em
+todas as fatias medidas.
+
+O efeito também é visível no formato da resposta:
+
+```text
+Pergunta do PubMedQA
+  base     : "Sim, os endometriomas (polposes endometrais) em mulheres..."
+  ajustado : "Resposta direta: yes. The results suggest that..."
+```
+
+O modelo ajustado adota a convenção do dataset ("Resposta direta: ..."), que o
+modelo base desconhece.
+
+> **Sobre as taxas de disclaimer e citação de fonte nesse relatório:** elas
+> aparecem como 0% e isso é esperado. As respostas de *referência* do dataset são
+> textos técnicos curtos, sem aviso de validação e sem citar arquivo/página — o
+> modelo acerta ao não inventá-los. No produto final, disclaimer e fontes não são
+> responsabilidade da LLM: são aplicados determinísticamente pelo guardrail de
+> saída e pelo retriever, e medidos na avaliação 8.2 (onde dão 100%).
+
+A amostragem é balanceada por categoria porque o split de teste é ~97% literatura
+e ~3% protocolo oficial; pegar os N primeiros registros mediria só uma fatia.
+Para reproduzir:
+
+```bash
+python -m src.finetuning.evaluate_finetune --max-examples 14
+```
+
+### 8.2 Assistente completo (RAG + segurança)
+
+`src/assistant/finetuning/evaluate.py` usa 20 perguntas SRAG separadas da
+curadoria de treino e mede o sistema inteiro, não a LLM isolada:
 
 | Métrica | Resultado |
 |---|---:|
@@ -209,8 +298,8 @@ A avaliação usa 20 perguntas SRAG separadas da curadoria de treino.
 | Recuperação PubMedQA no teste de sanidade | 100% |
 
 Em comparação com a versão anterior, o projeto agora consegue apontar arquivo e
-página, usa dados reais estruturados e não depende do treino simulado para validar
-o pipeline.
+página, usa dados reais estruturados, treina um adapter LoRA de verdade e não
+depende de treino simulado para validar o pipeline.
 
 ---
 
@@ -238,11 +327,18 @@ criando um SQLite com 1.071.699 registros.
 
 ## 10. Limitações
 
-- O fine-tuning LoRA completo ainda precisa ser executado em uma máquina com GPU.
-- O Transformer local é propositalmente pequeno e não deve ser usado como modelo
-  clínico real.
+- O fine-tuning LoRA foi executado, mas em um modelo de **1,5 B por 1 época**, por
+  restrição de hardware (16 GB de memória unificada). O modelo ajustado responde
+  em português coerente e ancorado nas fontes, porém não tem a qualidade de um
+  modelo de 7 B+ treinado por mais épocas. Com GPU NVIDIA, basta trocar `active`
+  no `config.yaml` para Falcon/LLaMA/Mistral e reexecutar o mesmo script.
+- O Transformer de `local_validation.py` é propositalmente pequeno e serve apenas
+  para validar o pipeline em CPU pura; não deve ser usado como modelo clínico.
 - Os dados SIVEP servem para contextualização epidemiológica/estruturada e não
   substituem um prontuário eletrônico completo do hospital.
+- O retriever usa TF-IDF. É rápido, determinístico e fácil de explicar, mas perde
+  sinônimos e paráfrases que um índice vetorial denso capturaria — o que explica
+  parte dos 20% de perguntas cuja fonte correta não entra no top-k.
 - A solução continua exigindo revisão humana para qualquer decisão clínica.
 
 ---

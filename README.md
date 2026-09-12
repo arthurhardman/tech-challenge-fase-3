@@ -105,30 +105,65 @@ O split atual gera 2.095 linhas de treino, 258 de validação e 258 de teste. O
 oversampling dos exemplos sintéticos foi reduzido porque agora existem exemplos
 reais do domínio SRAG.
 
-### LoRA/PEFT — caminho de entrega
+### LoRA/PEFT — executado nesta entrega
 
-O fine-tuning de um modelo pré-treinado continua em:
+O fine-tuning de um modelo pré-treinado está em `src/finetuning/train_lora.py` e
+**foi executado de verdade** — o adapter treinado acompanha o repositório.
 
-```bash
-python -m src.finetuning.dataset_prep --build
-python -m src.finetuning.train_lora --dry-run
-```
+| Item | Valor |
+|---|---|
+| Modelo base | `Qwen/Qwen2.5-1.5B-Instruct` |
+| Device | MPS (Apple M4, 16 GB) |
+| Parâmetros treináveis | 18,5 M (**1,18%** de 1,56 B) |
+| Exemplos de treino | 2.095 |
+| Épocas / steps | 1 / 131 |
+| Duração | ~1 h 06 min |
+| **Loss de treino** | **1,3352** |
+| **Loss de validação** | **1,1879** |
 
-O `--dry-run` valida todo o dataset sem baixar o modelo. Para o treinamento real:
+Para reproduzir:
 
 ```bash
 pip install -r requirements-finetuning.txt
+python -m src.finetuning.dataset_prep --build
 python -m src.finetuning.train_lora
 ```
 
-O adapter é salvo em:
+O `--dry-run` valida o dataset sem baixar o modelo:
+
+```bash
+python -m src.finetuning.train_lora --dry-run
+```
+
+O adapter (74 MB) é salvo em:
 
 ```text
 results/finetuned_model/
+├── adapter_model.safetensors   # pesos LoRA
+├── adapter_config.json
+└── run_info.json               # device, losses e histórico medidos
 ```
 
 O `CustomMedicalLLM` passa a usar esse adapter automaticamente quando
 `run_info.json` e as dependências do Hugging Face/PEFT estão disponíveis.
+Com ele carregado, o backend reportado é `finetuned-hf`.
+
+#### Sobre a escolha do modelo base
+
+O `config.yaml` traz Falcon-7B, LLaMA-3.1-8B, Mistral-7B e Qwen2.5-1.5B; trocar
+de modelo é só mudar a chave `active`. A entrega usou o Qwen porque a
+configuração original (Falcon-7B em 4-bit) depende de `bitsandbytes`, que só tem
+kernels para GPU NVIDIA — em Apple Silicon o caminho viável é um modelo menor sem
+quantização. O desafio pede "LLaMA, Falcon ou um outro", então a troca está
+dentro do escopo.
+
+O script detecta o device e se ajusta sozinho:
+
+| Device | Precisão | Quantização 4-bit |
+|---|---|---|
+| CUDA (NVIDIA) | bfloat16 | sim (QLoRA) |
+| MPS (Apple Silicon) | float16 | não |
+| CPU | float32 | não |
 
 ### Validação real em CPU
 
@@ -321,8 +356,12 @@ src/finetuning/
 
 ## Instalação
 
+O projeto roda em **Python 3.12** (ver `.python-version`). Versões mais novas
+como a 3.13/3.14 não têm wheels compatíveis com os pins de `numpy==1.26.4` e
+`tensorflow==2.16.1`, então o `pip install` falha ao compilar.
+
 ```bash
-python -m venv venv
+python3.12 -m venv venv
 
 # Linux/Mac
 source venv/bin/activate
@@ -372,9 +411,15 @@ python run_fase3.py --mode lora-dry-run
 
 ### LoRA real
 
+Executa o fine-tuning LoRA e roda o restante do pipeline usando o adapter:
+
 ```bash
+pip install -r requirements-finetuning.txt
 python run_fase3.py --mode lora-real
 ```
+
+Funciona em GPU NVIDIA, Apple Silicon (MPS) ou CPU — o script detecta o device.
+Nesta entrega o treino levou ~1 h 06 min em um Apple M4.
 
 ### Usar CSVs completos do OpenDataSUS
 
@@ -427,6 +472,32 @@ make lint
 
 ---
 
+## Avaliação do modelo ajustado vs. modelo base
+
+`src/finetuning/evaluate_finetune.py` gera a mesma pergunta nos dois modelos e
+compara com a resposta de referência do split de teste:
+
+| Categoria | n | ROUGE-L base | ROUGE-L ajustado | Ganho |
+|---|---:|---:|---:|---:|
+| Literatura (PubMedQA/MedQuAD) | 7 | 0,0467 | **0,1453** | 3,1× |
+| Protocolo oficial SRAG | 7 | 0,0683 | **0,1242** | 1,8× |
+| **Geral** | **14** | **0,0575** | **0,1347** | **2,3×** |
+
+```bash
+python -m src.finetuning.evaluate_finetune --max-examples 14
+```
+
+A amostragem é balanceada por categoria porque o split de teste é ~97% literatura
+e ~3% protocolo oficial — sem isso, as perguntas de SRAG ficariam de fora.
+
+> As colunas de disclaimer e citação de fonte desse relatório aparecem como 0% e
+> isso é esperado: as respostas de *referência* do dataset são textos técnicos
+> curtos, sem aviso de validação. No produto final esses dois itens não dependem
+> da LLM — são aplicados pelo guardrail de saída e pelo retriever, e medidos em
+> `eval_metrics.json` (100% nas duas métricas).
+
+---
+
 ## Resultados e documentação
 
 - relatório da Fase 3: [`docs/relatorio_fase3.md`](docs/relatorio_fase3.md)
@@ -434,6 +505,9 @@ make lint
 - roteiro do vídeo: [`docs/roteiro_video_fase3.md`](docs/roteiro_video_fase3.md)
 - diagrama: `results/figures/fluxo_langchain.png`
 - métricas do assistente: `results/finetuning/eval_metrics.json`
+- comparação base vs. ajustado: `results/finetuned_model/eval_report.json` e
+  [`docs/eval_finetune_report.md`](docs/eval_finetune_report.md)
+- adapter LoRA treinado: `results/finetuned_model/adapter_model.safetensors`
 - métricas do treino local: `results/finetuning/local_validation/metrics.json`
 
 ---

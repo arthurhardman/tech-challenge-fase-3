@@ -37,3 +37,8 @@ data/external/
 data/knowledge_base/sivep/*.db
 results/finetuning/local_validation/*.pt
 results/finetuning/local_validation/tokenizer.json
+
+# Adapter LoRA da Fase 3 (~70 MB): os pesos treinados SÃO versionados de
+# propósito, porque são a evidência do fine-tuning pedido no desafio.
+# Os checkpoints intermediários do Trainer, esses sim, ficam de fora.
+results/finetuned_model/checkpoint-*/

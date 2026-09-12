@@ -60,8 +60,12 @@ def test_fluxo_funciona_com_sivep_sqlite(tmp_path):
     assert estado.get("fontes")
 
 
-def test_dataset_principal_inclui_srag_oficial():
-    stats = build_dataset(max_medquad=20, max_pubmedqa=20, synthetic_oversample=1)
+def test_dataset_principal_inclui_srag_oficial(tmp_path):
+    # `out_dir=tmp_path` é obrigatório: sem isso o teste grava por cima do
+    # dataset de entrega em data/finetuning/processed/ com uma amostra reduzida.
+    stats = build_dataset(
+        out_dir=tmp_path, max_medquad=20, max_pubmedqa=20, synthetic_oversample=1
+    )
     assert stats["por_fonte"]["Protocolos oficiais SRAG"] >= 80
 
 

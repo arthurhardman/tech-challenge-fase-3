@@ -1,0 +1,179 @@
+{
+  "n_examples": 14,
+  "rouge_l_base_mean": 0.0575,
+  "rouge_l_tuned_mean": 0.1347,
+  "pct_respostas_com_disclaimer": 0.0,
+  "pct_respostas_citam_fonte": 0.0,
+  "por_categoria": {
+    "literatura": {
+      "n": 7,
+      "rouge_l_base": 0.0467,
+      "rouge_l_tuned": 0.1453,
+      "pct_disclaimer": 0.0,
+      "pct_cita_fonte": 0.0
+    },
+    "protocolo_oficial": {
+      "n": 7,
+      "rouge_l_base": 0.0683,
+      "rouge_l_tuned": 0.1242,
+      "pct_disclaimer": 0.0,
+      "pct_cita_fonte": 0.0
+    }
+  },
+  "detalhes": [
+    {
+      "source": "PubMedQA/PMID:16414216",
+      "category": "literatura",
+      "reference": "Resposta direta: no. Pre- and post-menopausal polyps exhibit differing hormone receptor and proliferation markers, presumably a result of their hormonal milieu. However, both groups appear to have lost the usual control mechanisms for apoptotic regulation, this appears to be responsible for their growth.",
+      "base_answer": "Sim, os endometriomas (polposes endometrais) em mulheres pré-menopausais têm características similares ao grupo de mulheres após-menopausais em termos de expressão imunohistoquímica dos receptores hormonais estrogeno e progesterona (ER e PR), bem como das marcas de proliferação/casos apoptóticos (Ki67 e Bcl-2).\n\nFonte: \"Endometrial polyps from pre- and post-menopausal women have different immunohistochemical expression of ER, PR, Ki67, and Bcl-2\" - Journal of Clinical Pathology, 2019.",
+      "tuned_answer": "Resposta direta: yes. The results suggest that the hormonal environment may play a role in determining the degree of proliferative activity within endometrial polyps irrespective of age at menopause.",
+      "rouge_l_base": 0.07476635514018691,
+      "rouge_l_tuned": 0.1111111111111111,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "guia_srag_ministerio_saude_2025.pdf, p. 4",
+      "category": "protocolo_oficial",
+      "reference": "Além dos critérios gerais, devem ser observados batimento de asa de nariz, cianose, tiragem intercostal, desidratação e inapetência.",
+      "base_answer": "Em casos de Suspeita de Respiratory Syncytial Virus (RSV) Aguda, os sinais de gravidade podem incluir:\n\n1. Fadiga respiratória severa ou dificuldade para respirar.\n2. Sintomas persistentes por mais de 7 dias.\n3. Alterações na fala ou movimento dos olhos.\n4. Temperaturas muito baixas (menores que 35°C).\n5. Problemas cardíacos graves como palpitações fortes ou falta de ar.\n6. Dificuldades para se alimentar ou bebê-lo.\n\nÉ importante notar que esses sintomas não são exclusivos da RSV e podem ocorrer em outras condições. Portanto, qualquer criança com suspeita deve ser avaliada por um profissional de saúde. A avaliação pode envolver testes laboratoriais, como o teste RT-PCR para diagnóstico confirmatório, além de uma avaliação física completa.",
+      "tuned_answer": "A criança deve ser monitorada para evidências de infecção respiratória aguda (IRSA) ou pneumonia. A temperatura pode variar entre 37,5°C e 40°C. O sinal mais importante de IRSA é o febre persistente por mais de 2 dias. A frequência respiratória aumenta gradualmente até 60-80 respirações/min durante o dia. A fala diminui, e a respiração dificulta-se. A respiração noturna também aumenta. A respiração pulmonar geralmente ocorre no início da noite. A respiração inspirativa expira (RIE) pode aparecer na fase inicial da respiração. A ausculta mostra ronco, artriofibrônus, orofaringeulotópico, e/ou broncopulmonar.",
+      "rouge_l_base": 0.06060606060606061,
+      "rouge_l_tuned": 0.07476635514018691,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "MedQuAD/NIDDK/0000159.xml",
+      "category": "literatura",
+      "reference": "- Lupus nephritis is kidney inflammation caused by systemic lupus erythematosus (SLE or lupus). - The symptoms of lupus nephritis may include high blood pressure, foamy urine, and edema. - Lupus nephritis is diagnosed through urine and blood tests and a kidney biopsy. - Lupus nephritis is treated with medications that suppress the immune system, so it stops attacking and damaging the kidneys. Standard treatment includes a corticosteroid, usually prednisone, to reduce inflammation in the kidneys. An immunosuppressive medication, such as cyclophosphamide or mycophenolate mofetil, is typically used with prednisone. - People with lupus nephritis that is causing high blood pressure may need to take medications that lower their blood pressure, which can also significantly slow the progression of kidney disease. - In many cases, treatment is effective in completely or partially controlling lupus nephritis, resulting in few, if any, further complications. However, even with treatment, 10 to 30 percent of people with lupus nephritis develop kidney failure.",
+      "base_answer": "Lupus nephritis é uma complicação grave da doença sistêmica lupus (SLE), caracterizada por inflamação nos rins. A maneira mais eficaz para tratar essa condição depende muito das características específicas do caso, incluindo o grau de comprometimento dos rins, a gravidade da inflamação e as condições gerais do paciente.\n\n1. **Medicação**: O tratamento geralmente envolve medicamentos como corticosteroides, nifedipina, e outros inibidores de citocinas. Os médicos podem também usar outras substâncias para controlar a inflamação e proteger os rins.\n\n2. **Monitoramento**: É crucial manter um monitoramento regular dos rins através de testes de urina e sangue. Isso ajuda a detectar mudanças ou problemas antes que se tornem graves.\n\n3. **Dietas**: Alguns pacientes podem ser orientados a seguir dietas ricas em nutrientes essenciais, mas sempre sob orientação médica.\n\n4. **Vigilância**: Em casos mais sérios, pode ser necessário fazer hemodiálise ou transplante renal.\n\n5. **Tratamento específico**: Dependendo do grau de comprometimento dos rins, o tratamento pode variar. Por exemplo, em casos leves, pode-se focar na redução da inflamação e no controle da",
+      "tuned_answer": "- A kidney biopsy is the only way to diagnose lupus nephritis. - Treatment depends on how severe the disease is and whether there are any complications. - The goal of treatment is to reduce inflammation in the kidneys and prevent damage from further progression. - Medications used include corticosteroids (such as prednisone), immunosuppressants (such as cyclophosphamide or azathioprine), and antimalarial drugs (such as hydroxychloroquine). - In some cases, surgery may be needed to remove damaged parts of the kidney. - People with lupus should avoid pregnancy because it can cause serious problems such as miscarriage, premature birth, and low-birth-weight babies.",
+      "rouge_l_base": 0.03058103975535168,
+      "rouge_l_tuned": 0.17760617760617764,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "dicionario_sivep_2019_2025.pdf, p. 2",
+      "category": "protocolo_oficial",
+      "reference": "SG_UF_NOT identifica a Unidade Federativa onde está localizada a unidade que realizou a notificação do caso.",
+      "base_answer": "O campo `SG_UF_NOT` geralmente refere-se ao código da UF (Unidade Federativa) no Brasil. No entanto, sem mais contexto, não posso fornecer informações precisas sobre seu significado ou função específica.\n\nNo sistema de classificação internacional de doenças (ICD-10), por exemplo, o código `G93.82` seria uma possível representação para `SG_UF_NOT`, mas isso depende muito do contexto específico em que ele está sendo usado.\n\nSe você estiver trabalhando com dados relacionados à saúde brasileira, é importante consultar as normas específicas do seu sistema de gestão de dados ou consultoria médica local para obter informações confiáveis sobre o uso desse código.\n\nPara obter informações mais precisas sobre o `SG_UF_NOT`, sugiro:\n\n1. Verificar se há um documento técnico ou guia de referência especificamente dedicado ao seu sistema.\n2. Consultar os protocolos internos ou manuais de suporte ao usuário do seu software de gerenciamento de dados.\n3. Fazer contato com a equipe técnica responsável pelo projeto ou departamento de saúde pública onde este código é utilizado.\n\nSem mais detalhes, é difícil afirmar com certeza o que exatamente o `SG_UF_NOT` representa.",
+      "tuned_answer": "SG_UF_NOT (Sigla UF) registra a sigla da unidade federativa onde ocorreu o evento ou serviço.",
+      "rouge_l_base": 0.031578947368421054,
+      "rouge_l_tuned": 0.19354838709677422,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "MedQuAD/CDC/0000266.xml",
+      "category": "literatura",
+      "reference": "Lujo hemorrhagic fever (LUHF) occurs in southern Africa. The initial case was certainly infected in Zambia. \n Field workers \n \nField workers are at greatest risk because of increased human contact with the reservoir rodent population. Sexual partners of field workers may be at greater risk as well. In addition to nosocomial infection in healthcare workers already described, laboratory infections have been frequently described with Arenaviruses and Lujo virus can certainly be transmitted to laboratory workers during manipulation of the virus, especially during experimental infections of rodents.",
+      "base_answer": "Lujo Hemorrhagic Fever (LUHF), também conhecido como Ebola virus disease (EVD), é uma doença grave causada pelo vírus Ebola. A maioria das pessoas infectadas não desenvolve sintomas ou apresenta apenas sintomas leves. No entanto, algumas pessoas podem desenvolver complicações graves, incluindo:\n\n1. Mortalidade alta em casos graves.\n2. Síndrome respiratória aguda severa (SARS).\n3. Enfisema pulmonar.\n\nAs pessoas mais vulneráveis para desenvolver complicações graves incluem:\n\n- Idosos (mais de 50 anos)\n- Pessoas com doenças pré-existentes, como diabetes, hipertensão arterial, problemas cardíacos ou imunodeficícios crônicos\n- Pessoas com baixo sistema imune\n\nÉ importante notar que as probabilidades de desenvolver complicações graves são altamente dependentes da idade, saúde geral e condições pré-existentes da pessoa. O diagnóstico precoce e o tratamento adequados são cruciais para minimizar os riscos de complicações graves.\n\nFonte: World Health Organization (WHO). \"Ebola Virus Disease\". https://www.who.int/health-topics/ebola#tab=tab_1",
+      "tuned_answer": "The following groups are considered to be at higher risk of contracting LUHF:\n \n- people who live in or travel to areas where the virus is found - health care workers and laboratory personnel working with animals that may carry the virus\n \nPeople living in or traveling to an area where the virus is found should take precautions against mosquito bites. These include using insect repellent containing DEET; wearing long-sleeved shirts and pants when outdoors; avoiding being outside during dusk and dawn hours; and draining standing water around homes.\n \nHealth care workers and laboratory personnel working with animals that may carry the virus should follow standard infection control procedures. They should wear protective clothing such as gloves, masks, goggles, and face shields when handling potentially infected animal material. Workers should also wash their hands thoroughly after they have handled potentially infected animal material.",
+      "rouge_l_base": 0.017937219730941704,
+      "rouge_l_tuned": 0.11403508771929824,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf, p. 5",
+      "category": "protocolo_oficial",
+      "reference": "O transporte deve ser limitado ao mínimo necessário. Quando ocorrer, o [NOME_REMOVIDO] e a unidade receptora deve ser avisada previamente para preparar as medidas de proteção.",
+      "base_answer": "Para realizar o transporte de uma pessoa em estado de emergência ou crise, é importante seguir os seguintes passos:\n\n1. **Preparação**: Primeiro, prepare-se para o transporte. Certifique-se de ter todos os equipamentos necessários como guia, medicação adequada, eletrocardiograma (ECG), oxigênio, etc.\n\n2. **Identificação da Pessoa**: Identifique rapidamente quem é a pessoa envolvida no caso. Se possível, tenha informações sobre seu histórico médico e condições pré-existentes.\n\n3. **Transporte Seguro**: Use veículos seguros e sigilosos. Evite viagens em estradas congestionadas ou áreas perigosas. \n\n4. **Medicamentos**: Leve medicamentos específicos recomendados pelo médico, se houver. Não adicione mais nada ao paciente.\n\n5. **Contato Médico**: Mantenha contato com o médico ou equipe médica localizado na emergência. Informe-os sobre as condições do paciente durante o transporte.\n\n6. **Transferência**: Se necessário, transfira o paciente para outro serviço de saúde. Lembre-se de manter registros detalhados dos procedimentos realizados.\n\n7. **Reconhecimento**: Após o transporte, reconheça o paciente novamente e informe aos médicos locais sobre o ocorrido.\n\n8. **Documentação**: Documente todo o processo, incluindo fotos,",
+      "tuned_answer": "A equipe de transportes deve receber treinamento adequado para identificar os riscos associados ao transporte de pacientes e implementar procedimentos internos para minimizar esses riscos. A comunicação entre as equipes de transportes e dos hospitais onde são recebidos os pacientes também é fundamental para garantir a segurança dos pacientes durante o transporte.",
+      "rouge_l_base": 0.05235602094240838,
+      "rouge_l_tuned": 0.15384615384615388,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "PubMedQA/PMID:24450673",
+      "category": "literatura",
+      "reference": "Resposta direta: no. An additional delayed phase through the abdomen in routine contrast-enhanced CT examinations of the abdomen and pelvis is of low yield, particularly if reliable follow-up imaging to further elucidate uncertain findings is available.",
+      "base_answer": "Aqui está uma resenha da pesquisa:\n\nTitle: Delayed Imaging in Routine CT Examinations of the Abdomen and Pelvis: Is It Worth the Additional Cost of Radiation and Time?\nAuthors: Kwon YS, Kim JH, Lee SH, et al.\nJournal: Radiology\nVolume: 273\nIssue: 1\nPages: 147-154\nDate: January 2014\n\nResumo:\nEste estudo retrospectivamente avaliou os benefícios potenciais da imageria em fase adiada na tomografia computadorizada (CT) convencional do abdômen e pelvices. Foram analisadas 1000 examinações de CT contrastante do abdômen e pelvices realizadas entre julho de 2008 e fevereiro de 2010 em um único centro. As imagens foram revisadas por dois radiologistas de formação especializada, que permaneceram ocultos aos relatórios médicos oficiais.\n\nOs resultados mostraram que apenas 4,2% dos pacientes tinham resultados adicionais ou observações somente nas imagens em fase adiada. Os principais achados incluíram hemangiomas hepáticos (12 casos), adenomas adrenalais (12 casos) e cistos pélvicos parapélv",
+      "tuned_answer": "Resposta direta: yes. Delayed phase imaging can be used routinely without increasing radiation dose or delay in diagnosis. However, its value depends on clinical indication.",
+      "rouge_l_base": 0.06593406593406594,
+      "rouge_l_tuned": 0.13114754098360656,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf, p. 17",
+      "category": "protocolo_oficial",
+      "reference": "O quadro do guia informa que a notificação de SRAG hospitalizado é feita pelos serviços de saúde públicos ou privados que atendem pacientes com SRAG.",
+      "base_answer": "O Sistema de Vigilância de Acidentes Hospitalares (SVAH) é uma ferramenta utilizada para monitorar eventos relacionados à saúde dos pacientes em hospitais públicos ou privados. O Serviço de Atendimento Móvel de Urgência (SAMU), por exemplo, pode notificar o SVAH sobre acidentes hospitalizados.\n\nNo entanto, não há um único órgão específico que pode notificar diretamente o SVAH. A responsabilidade geralmente recai sobre os seguintes órgãos:\n\n1. SAMU: É o principal responsável pela identificação e notificação de acidentes hospitalizados.\n2. Equipes de Monitoramento da Saúde: Pode ser responsabilizada pelo registro inicial dos dados.\n3. Serviços de Informações Técnicas: Possivelmente envolvidos na coleta e análise dos dados.\n\nÉ importante lembrar que cada instituição terá suas próprias políticas e procedimentos específicos para lidar com este tipo de informação. Portanto, se você estiver trabalhando nesse sistema, seria útil consultar as instruções específicas fornecidas pela sua organização para obter detalhes mais precisos sobre quem deve notificar o SVAH.",
+      "tuned_answer": "A equipe de saúde deve notificar o SRAG hospitalizado imediatamente ao serviço regional de saúde (SRS) ou à secretaria municipal de saúde (SMS), conforme disponibilidade de atendimento.",
+      "rouge_l_base": 0.0903954802259887,
+      "rouge_l_tuned": 0.23076923076923075,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "PubMedQA/PMID:11867487",
+      "category": "literatura",
+      "reference": "Resposta direta: maybe. Although most players in the study believe that rugby headgear may prevent concussion, only a minority reported wearing it. Coaches tended to be less convinced than the players that rugby headgear can prevent concussion.",
+      "base_answer": "The study you've described examines the attitudes towards the use of protective headgear in rugby among both players and coaches. The findings indicate that while players generally believed that headgear could help prevent concussions, they were less convinced by coaches regarding this benefit. Despite these beliefs, only a small percentage of players actually wore headgear during matches, and even fewer felt it should be mandatory.\n\nCommon reasons for not wearing headgear included lack of mandatory regulations, discomfort, and cost. This suggests there may be an inconsistency between player perceptions and actual practices when it comes to using headgear as a preventive measure against concussions in rugby. It's important to note that while the study provides valuable insights into attitudes, further research would be needed to determine if implementing such measures can effectively reduce the incidence of concussions in rugby.",
+      "tuned_answer": "Resposta direta: no. The majority of players believed that headgear would help prevent concussions but most did not wear it or feel that it should be required by law.",
+      "rouge_l_base": 0.11363636363636363,
+      "rouge_l_tuned": 0.21212121212121213,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "dicionario_sivep_2019_2025.pdf, p. 24",
+      "category": "protocolo_oficial",
+      "reference": "EVOLUCAO registra cura, óbito, óbito por outras causas ou ignorado.",
+      "base_answer": "A categoria \"EVOLUÇÃO\" no contexto da medicina geralmente refere-se à evolução ou mudança dos sintomas, sinais ou condições de uma doença ou condição médica ao longo do tempo. Esta categoria pode ser utilizada em diversos contextos médicos, como:\n\n1. Evolução das doenças crônicas: Por exemplo, diabetes mellitus, hipertensão arterial, artrite reumatóide.\n\n2. Progressão de lesões: Como na cirurgia ortopédica, onde os resultados podem melhorar gradualmente após procedimentos.\n\n3. Alterações nos quadros de saúde: Como nas doenças autoimunes, onde as manifestações podem se intensificar ou diminuir.\n\n4. Recuperação ou piora: Em casos de trauma, onde há progressão ou deterioração dos ferimentos.\n\n5. Agravos: Quando a condição clínica se torna mais grave ou complexa.\n\n6. Transição entre estados: Como na transição de um estado de coma para consciência.\n\n7. Reabilitação: Após tratamentos, onde há melhora ou persistência de problemas físicos ou mentais.\n\nÉ importante notar que a classificação específica depende do contexto específico da situação clínica e do diagnóstico inicial. O uso correto desta categoria requer conhecimento profundo sobre a condição médica e a capacidade de interpretar dados clínicos relevant",
+      "tuned_answer": "A tabela abaixo explica as categorias possíveis para cada campo da base:",
+      "rouge_l_base": 0.010638297872340425,
+      "rouge_l_tuned": 0.0,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "MedQuAD/NINDS/0000009.xml",
+      "category": "literatura",
+      "reference": "Prognosis depends on the extent and severity of malformations. Intellectual impairment does not worsen. Individuals with a disorder of the corpus callosum typically have delays in attaining developmental milestones such as walking, talking, or reading; challenges with social interactions; clumsiness and poor motor coordination, particularly on skills that require coordination of left and right hands and feet (such as swimming, bicycle riding, and driving; and mental and social processing problems that become more apparent with age, with problems particularly evident from junior high school into adulthood.",
+      "base_answer": "A agenêse do corpus callosum (ACC) é uma condição neurológica rara em que o corpo central da falange não se forma completamente durante o desenvolvimento fetal ou neonatal. Isso resulta em uma falta de conexão entre os hemisférios cerebrais direcionados.\n\nOutros termos relacionados incluem:\n\n- Anomalia do Corpus Callosum\n- Congênita Falange Cerebral Incompleta\n\nO prognóstico para a ACC pode variar dependendo dos sintomas apresentados e da gravidade da condição. Alguns pacientes podem ter apenas pequenas alterações na função cognitiva, enquanto outros podem enfrentar problemas mais graves como deficiências motoras, aprendizado retardado, dificuldades de comunicação e comportamentais.\n\nEm geral, as crianças com ACC tendem a crescer normalmente, mas podem precisar de cuidados especiais para lidar com seus desafios específicos. O tratamento varia dependendo das necessidades individuais do paciente, podendo incluir fisioterapia, psicologia, educação especial e/ou medicamentos para controlar sintomas.\n\nÉ importante notar que cada caso é único e o prognóstico deve ser discutido individualmente por um profissional de saúde capacitado após uma avaliação completa.",
+      "tuned_answer": "The prognosis depends on whether or not seizures occur and how severe they are. If seizures occur, treatment with anticonvulsant drugs may be necessary to control them. In some cases, surgery may be needed to remove part of the brain that has been damaged by seizures.",
+      "rouge_l_base": 0.023999999999999997,
+      "rouge_l_tuned": 0.10606060606060606,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "dicionario_sivep_2019_2025.pdf, p. 20",
+      "category": "protocolo_oficial",
+      "reference": "PCR_RESUL registra o resultado da RT-PCR ou outro método de biologia molecular como detectável, não detectável, inconclusivo, não realizado, aguardando resultado ou ignorado.",
+      "base_answer": "No campo PCR_RESUL, geralmente aparecem as seguintes categorias:\n\n1. Positivo: Indica que o resultado da detecção de vírus ou anticorpos está positivo.\n\n2. Negativo: Indica que o resultado da detecção de vírus ou anticorpos está negativo.\n\n3. Não determinado: O resultado não foi possível de determinar ou não foi obtido.\n\n4. Outros: Categorias específicas para resultados não classificados ou outros tipos de respostas.\n\nÉ importante notar que os detalhes exatos podem variar dependendo do laboratório específico e das especificações do teste em questão. Para obter informações mais precisas sobre a estrutura específica dos campos PCR_RESUL em diferentes sistemas de saúde, seria necessário consultar diretamente o manual técnico do laboratório ou o protocolo de ensaio utilizado.",
+      "tuned_answer": "PCR_RESUL pode ser igual a 1 (positivo), 2 (negativo) ou 9 (não determinado).",
+      "rouge_l_base": 0.11594202898550726,
+      "rouge_l_tuned": 0.1111111111111111,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "PubMedQA/PMID:21080127",
+      "category": "literatura",
+      "reference": "Resposta direta: maybe. Although initial infection control rate was substantially lower in the retention group than the removal group, final results were comparable at latest followup. We believe retention treatment can be selectively considered for non-S. aureus infection, and when applied in selected patients, polyethylene exchange should be performed.",
+      "base_answer": "A análise da pesquisa apresentada sugere que o uso de implantes retencionados para tratamento de infecções em articulações torácicas pode ser mais eficaz na prevenção de novas infecções comparadas ao método de duas etapas de revisão. No entanto, os estudos baseados nessa conclusão são limitados por sua abordagem histórica em vez de uma comparação contínua.\n\nNo entanto, não há evidências suficientes ou confiáveis para recomendar implantes retencionados como uma alternativa segura e eficaz para casos específicos de infecções nas artroplastias torácicas. O tratamento deve sempre ser individualizado e conduzido por profissionais médicos capacitados, considerando todas as circunstâncias individuais dos pacientes. A decisão sobre qual método de tratamento utilizar deve ser tomada após uma avaliação cuidadosa e detalhada pelos especialistas envolvidos.",
+      "tuned_answer": "Resposta direta: yes. Retention treatment appears to have advantages over two-stage revision in terms of reduced cost and time. The results suggest that retention may not always be the preferred method of treatment for infected TKA.",
+      "rouge_l_base": 0.0,
+      "rouge_l_tuned": 0.16470588235294115,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    },
+    {
+      "source": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf, p. 8",
+      "category": "protocolo_oficial",
+      "reference": "Não. O protocolo ressalta que um resultado negativo no teste sorológico não exclui o diagnóstico de covid-19 e que esse teste não deve ser usado isoladamente para diagnóstico.",
+      "base_answer": "Não, um teste rápido sorológico negativo para SARS-CoV-2 (covid-19) não exclui completamente o diagnóstico. O resultado negativo indica que você não está infectado com o vírus no momento em que o teste foi realizado. No entanto, pode haver casos onde o testes são imprecisos ou onde há uma baixa sensibilidade dos testes rápidos.\n\nÉ importante lembrar que:\n\n1. Os testes rápidos podem apresentar resultados falsos negativos em pessoas que estão realmente infetadas.\n2. A ausência de sintomas também não significa que você não esteja infectado.\n3. Para garantir um diagnóstico confiável, recomenda-se fazer um teste de laboratório mais preciso, como PCR, se possível.\n\nPortanto, mesmo com um resultado negativo, é recomendável seguir as orientações da autoridade sanitária local e manter os cuidados preventivos contra a doença.",
+      "tuned_answer": "Sim. A retenção de uma amostra de urina ou saliva pode ser realizada em laboratório por 24 horas. O resultado positivo indica presença de anticorpos contra SARS-CoV-2 no organismo.",
+      "rouge_l_base": 0.11688311688311688,
+      "rouge_l_tuned": 0.10526315789473684,
+      "tuned_has_disclaimer": false,
+      "tuned_cites_source": false
+    }
+  ]
+}

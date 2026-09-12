@@ -1,24 +1,34 @@
 # requirements-finetuning.txt
 # ----------------------------------------------------------------------------
 # Dependências ADICIONAIS para o pipeline de fine-tuning LoRA/PEFT (Fase 3).
-# Instale por cima do requirements.txt principal, em um ambiente com GPU
-# (Google Colab T4/L4/A100, ou GPU própria com >= 16GB VRAM):
+# Instale por cima do requirements.txt principal:
 #
 #   pip install -r requirements.txt
 #   pip install -r requirements-finetuning.txt
+#
+# O treino roda em três cenários:
+#   - GPU NVIDIA  : quantização 4-bit (QLoRA) via bitsandbytes;
+#   - Apple Silicon (MPS) : sem quantização, modelo em float16;
+#   - CPU         : sem quantização, modelo em float32 (lento).
+#
+# O `train_lora.py` detecta o device e desliga a quantização sozinho quando não
+# há CUDA, porque bitsandbytes só tem kernels para GPU NVIDIA.
 #
 # Mantido separado do requirements.txt porque torch/bitsandbytes têm builds
 # específicos por SO/CUDA e não são necessários para rodar o restante do
 # projeto (pipeline tabular, imagem, AG, app Streamlit) em CPU.
 # ----------------------------------------------------------------------------
 
-torch==2.3.1
-transformers==4.44.2
-peft==0.12.0
-bitsandbytes==0.43.3
-accelerate==0.33.0
-trl==0.9.6
-datasets==2.20.0
-sentencepiece==0.2.0
-evaluate==0.4.2
-huggingface_hub==0.24.6
+# Versões testadas nesta entrega (fine-tuning executado em Apple M4 / MPS).
+torch>=2.3
+transformers>=4.44,<5
+peft>=0.12
+accelerate>=0.33
+trl>=0.9,<0.12
+datasets>=2.20
+sentencepiece>=0.2
+huggingface_hub>=0.24
+
+# Somente GPU NVIDIA (quantização 4-bit/QLoRA). Não há build para macOS/MPS —
+# deixe comentado fora do Linux+CUDA; o treino funciona sem ele, sem quantizar.
+# bitsandbytes>=0.43

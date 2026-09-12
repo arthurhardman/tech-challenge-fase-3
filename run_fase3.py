@@ -10,7 +10,7 @@ Exemplos:
     # Validar o dataset LoRA sem baixar modelo/GPU
     python run_fase3.py --mode lora-dry-run
 
-    # Fine-tuning LoRA real (GPU + requirements-finetuning.txt)
+    # Fine-tuning LoRA real (requirements-finetuning.txt)
     python run_fase3.py --mode lora-real
 
 A base sintética antiga continua disponível, mas só é regenerada quando
@@ -88,7 +88,7 @@ def main() -> None:
         "--mode",
         choices=["local", "lora-dry-run", "lora-real", "skip-train"],
         default="local",
-        help="local executa treino real pequeno em CPU; lora-real exige GPU.",
+        help="local executa treino real pequeno em CPU; lora-real faz o LoRA/PEFT (GPU NVIDIA, Apple Silicon/MPS ou CPU).",
     )
     ap.add_argument("--paciente", default=None)
     ap.add_argument("--sivep", nargs="*", default=None, help="CSV/Parquet ou diretório com INFLUD*.csv")

@@ -3,25 +3,25 @@
 Dataset de instruction-tuning combinando literatura pública, protocolos oficiais
 de SRAG e poucos exemplos sintéticos de formatos internos hospitalares.
 
-- **Total de exemplos únicos:** 146
-- **Val / Test:** 14 / 14 (sem oversampling)
-- **Train (linhas gravadas em train.jsonl):** 118 (118 exemplos únicos; os 6 exemplos de protocolo interno foram repetidos 1x no treino — ver nota abaixo)
+- **Total de exemplos únicos:** 2587
+- **Val / Test:** 258 / 258 (sem oversampling)
+- **Train (linhas gravadas em train.jsonl):** 2095 (2071 exemplos únicos; os 6 exemplos de protocolo interno foram repetidos 5x no treino — ver nota abaixo)
 
 ## Por fonte
 
-- MedQuAD: 20
-- PubMedQA: 20
+- MedQuAD: 1500
+- PubMedQA: 1000
 - Protocolos oficiais SRAG: 100
 - Protocolos internos (sintéticos): 6
 
 ## Por categoria
 
+- literatura: 2481
 - protocolo_oficial: 100
-- literatura: 40
-- laudo: 1
 - protocolo: 3
-- receita: 1
+- laudo: 1
 - faq: 1
+- receita: 1
 
 ## Observações sobre privacidade
 

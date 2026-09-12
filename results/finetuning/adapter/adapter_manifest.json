@@ -1,5 +1,6 @@
 {
-  "adapter_type": "LoRA (demonstração)",
+  "adapter_type": "LoRA (SIMULADO — sem pesos treinados)",
+  "is_simulation": true,
   "base_model": "meta-llama/Llama-3.2-1B-Instruct",
   "r": 16,
   "lora_alpha": 32,
@@ -8,5 +9,5 @@
     "v_proj"
   ],
   "n_exemplos_treino": 727,
-  "observacao": "Manifesto de demonstração. Em modo 'real', aqui ficam os pesos do adapter."
+  "observacao": "ATENÇÃO: manifesto do caminho LEGADO de demonstração. Os valores acima descrevem a configuração que seria usada, mas NENHUM peso foi treinado e a curva de loss deste modo é simulada. O fine-tuning real da entrega está em src/finetuning/train_lora.py e grava o adapter em results/finetuned_model/ junto de um run_info.json com as métricas medidas."
 }

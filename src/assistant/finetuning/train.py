@@ -174,13 +174,20 @@ def treinar_demo(dataset: List[Dict], epochs: int, lr: float) -> Dict:
     # Salva um manifesto de "adapter" (o que o LoRA gravaria).
     config.ensure_dirs()
     manifesto = {
-        "adapter_type": "LoRA (demonstração)",
+        "adapter_type": "LoRA (SIMULADO — sem pesos treinados)",
+        "is_simulation": True,
         "base_model": config.BASE_MODEL_ID,
         "r": 16,
         "lora_alpha": 32,
         "target_modules": ["q_proj", "v_proj"],
         "n_exemplos_treino": n,
-        "observacao": "Manifesto de demonstração. Em modo 'real', aqui ficam os pesos do adapter.",
+        "observacao": (
+            "ATENÇÃO: manifesto do caminho LEGADO de demonstração. Os valores acima "
+            "descrevem a configuração que seria usada, mas NENHUM peso foi treinado e "
+            "a curva de loss deste modo é simulada. O fine-tuning real da entrega está "
+            "em src/finetuning/train_lora.py e grava o adapter em results/finetuned_model/ "
+            "junto de um run_info.json com as métricas medidas."
+        ),
     }
     (config.ADAPTER_DIR / "adapter_manifest.json").write_text(
         json.dumps(manifesto, ensure_ascii=False, indent=2), encoding="utf-8"

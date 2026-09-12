@@ -11,9 +11,12 @@ base_models:
   llama3_1_8b: "meta-llama/Llama-3.1-8B-Instruct"   # requer aceite de licença no HF Hub
   falcon_7b: "tiiuae/falcon-7b-instruct"             # aberto, sem gate de licença
   mistral_7b: "mistralai/Mistral-7B-Instruct-v0.3"   # alternativa leve e popular
-active: falcon_7b
+  qwen25_1_5b: "Qwen/Qwen2.5-1.5B-Instruct"          # roda sem GPU NVIDIA (Apple Silicon/CPU)
+active: qwen25_1_5b
 
 # Quantização para caber em GPUs de 16-24GB (T4/L4/A10 do Colab).
+# Só é aplicada quando há CUDA: bitsandbytes não tem kernels para Apple Silicon,
+# então em MPS/CPU o modelo é carregado sem quantizar (ver train_lora.py).
 quantization:
   load_in_4bit: true
   bnb_4bit_quant_type: "nf4"
@@ -41,20 +44,20 @@ lora:
 # Treino
 training:
   output_dir: "results/finetuned_model"
-  num_train_epochs: 3
-  per_device_train_batch_size: 2
-  per_device_eval_batch_size: 2
-  gradient_accumulation_steps: 8
+  num_train_epochs: 1
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 16
   learning_rate: 0.0002
   lr_scheduler_type: "cosine"
   warmup_ratio: 0.03
   weight_decay: 0.01
-  max_seq_length: 1024
+  max_seq_length: 512
   logging_steps: 10
   eval_strategy: "steps"
-  eval_steps: 100
+  eval_steps: 50
   save_strategy: "steps"
-  save_steps: 100
+  save_steps: 50
   save_total_limit: 2
   bf16: true
   gradient_checkpointing: true
@@ -63,6 +66,9 @@ training:
 
 # Dados
 data:
+  # Usado só pela avaliação intermediária do treino em CPU/MPS (ver train_lora.py).
+  # A avaliação da entrega roda no test.jsonl completo via evaluate_finetune.py.
+  eval_subset_size: 32
   train_path: "data/finetuning/processed/train.jsonl"
   val_path: "data/finetuning/processed/val.jsonl"
   test_path: "data/finetuning/processed/test.jsonl"

@@ -8,275 +8,275 @@
   "training_examples": 380,
   "evaluation_examples": 20,
   "vocab_size": 6500,
-  "pretraining_final_loss": 5.684954894216437,
-  "general_medical_final_loss": 7.763857364654541,
-  "finetuning_final_loss": 2.1713621377944947,
-  "mean_token_f1": 0.24169932241288777,
-  "median_token_f1": 0.23749119097956306,
+  "pretraining_final_loss": 5.6856534857498975,
+  "general_medical_final_loss": 7.7527085605420565,
+  "finetuning_final_loss": 2.0967958331108094,
+  "mean_token_f1": 0.2111931275585195,
+  "median_token_f1": 0.20408163265306123,
   "pretraining_history": [
     {
       "epoch": 1,
-      "loss": 7.2270502291227645
+      "loss": 7.227060619153474
     },
     {
       "epoch": 2,
-      "loss": 5.684954894216437
+      "loss": 5.6856534857498975
     }
   ],
   "general_medical_history": [
     {
       "epoch": 1,
-      "loss": 7.763857364654541
+      "loss": 7.7527085605420565
     }
   ],
   "finetuning_history": [
     {
       "epoch": 1,
-      "loss": 6.793916893005371
+      "loss": 6.808074235916138
     },
     {
       "epoch": 2,
-      "loss": 5.979427766799927
+      "loss": 5.9858111381530765
     },
     {
       "epoch": 3,
-      "loss": 5.571521472930908
+      "loss": 5.580708694458008
     },
     {
       "epoch": 4,
-      "loss": 5.247955751419068
+      "loss": 5.255073356628418
     },
     {
       "epoch": 5,
-      "loss": 4.990987777709961
+      "loss": 5.015330839157104
     },
     {
       "epoch": 6,
-      "loss": 4.751467990875244
+      "loss": 4.78078327178955
     },
     {
       "epoch": 7,
-      "loss": 4.548495054244995
+      "loss": 4.58538556098938
     },
     {
       "epoch": 8,
-      "loss": 4.327427911758423
+      "loss": 4.381683254241944
     },
     {
       "epoch": 9,
-      "loss": 4.14976122379303
+      "loss": 4.212491226196289
     },
     {
       "epoch": 10,
-      "loss": 3.9748192548751833
+      "loss": 4.040540480613709
     },
     {
       "epoch": 11,
-      "loss": 3.789923620223999
+      "loss": 3.872989273071289
     },
     {
       "epoch": 12,
-      "loss": 3.6079391717910765
+      "loss": 3.685162162780762
     },
     {
       "epoch": 13,
-      "loss": 3.433945822715759
+      "loss": 3.5071423053741455
     },
     {
       "epoch": 14,
-      "loss": 3.2841943740844726
+      "loss": 3.320758032798767
     },
     {
       "epoch": 15,
-      "loss": 3.133081388473511
+      "loss": 3.1591596841812133
     },
     {
       "epoch": 16,
-      "loss": 2.954649233818054
+      "loss": 2.9546123504638673
     },
     {
       "epoch": 17,
-      "loss": 2.8365070819854736
+      "loss": 2.806292486190796
     },
     {
       "epoch": 18,
-      "loss": 2.676702952384949
+      "loss": 2.6489391803741453
     },
     {
       "epoch": 19,
-      "loss": 2.5572875499725343
+      "loss": 2.4937469482421877
     },
     {
       "epoch": 20,
-      "loss": 2.430787372589111
+      "loss": 2.3739230394363404
     },
     {
       "epoch": 21,
-      "loss": 2.293295741081238
+      "loss": 2.2303566694259644
     },
     {
       "epoch": 22,
-      "loss": 2.1713621377944947
+      "loss": 2.0967958331108094
     }
   ],
   "examples": [
     {
       "question": "O que caracteriza uma síndrome gripal suspeita de covid-19?",
       "reference": "Quadro respiratório agudo com pelo menos dois sinais ou sintomas entre febre, calafrios, dor de garganta, dor de cabeça, tosse, coriza e alterações do olfato ou paladar. A febre pode estar ausente na covid-19.",
-      "prediction": "o guia orienta o campo de internação, com srag hospitalizado.",
-      "token_f1": 0.14545454545454545,
+      "prediction": "o guia destaca o guia orienta o paciente de início, 2 para não e 9 para ignorado.",
+      "token_f1": 0.12903225806451613,
       "source": "guia_srag_ministerio_saude_2025.pdf",
       "page": 4
     },
     {
       "question": "O que fazer quando um paciente com síndrome gripal apresenta fatores de risco para complicações?",
       "reference": "Esses pacientes devem ser monitorados atentamente quanto a critérios de evolução para SRAG e orientados a procurar o serviço de saúde imediatamente se houver piora clínica.",
-      "prediction": "a deve ser deve ser.",
-      "token_f1": 0.1818181818181818,
+      "prediction": "a data deve ser deve ser deve. a.",
+      "token_f1": 0.21621621621621623,
       "source": "guia_srag_ministerio_saude_2025.pdf",
       "page": 5
     },
     {
       "question": "Qual sistema deve receber a notificação de casos hospitalizados de SRAG?",
       "reference": "Casos hospitalizados de SRAG devem ser notificados no SIVEP-Gripe, conforme os fluxos de vigilância apresentados pelo Ministério da Saúde.",
-      "prediction": "o protocolo orienta o protocolo orienta o protocolo orienta o guia classifica a coleta de srag e devem, com srag hospitalizado como indica e de solicitação de notificação srag hospitalizado.",
-      "token_f1": 0.21818181818181817,
+      "prediction": "o guia destaca o guia orienta o protocolo institucional como srag, com srag, com srag, com e orienta início dos <unk>, mas <unk>, mas para sim, repouso e orienta o protocolo campos <unk>, com srag e devem ou ignorado.",
+      "token_f1": 0.10526315789473685,
       "source": "guia_srag_ministerio_saude_2025.pdf",
       "page": 2
     },
     {
       "question": "Em que momento do atendimento devem ser aplicadas medidas de prevenção e controle?",
       "reference": "As medidas de prevenção e controle devem ser aplicadas desde a chegada e triagem do paciente, durante toda a assistência, até alta, transferência ou óbito.",
-      "prediction": "o deve ser deve ser. a.",
-      "token_f1": 0.16216216216216217,
+      "prediction": "o protocolo deve ser deve ser deve ser. a.",
+      "token_f1": 0.15,
       "source": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf",
       "page": 4
     },
     {
       "question": "Quando as amostras respiratórias devem ser coletadas para detecção viral?",
       "reference": "As amostras de secreções respiratórias devem ser coletadas preferencialmente até o sétimo dia após o início dos sintomas.",
-      "prediction": "o protocolo <unk> o início dos <unk> a data deve ser.",
-      "token_f1": 0.34285714285714286,
+      "prediction": "o protocolo orienta o protocolo orienta a coleta deve ser deve ser deve ser dos sintomas e orienta a data de amostra e notificação do caso.",
+      "token_f1": 0.30434782608695654,
       "source": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf",
       "page": 6
     },
     {
       "question": "Um teste rápido sorológico negativo para covid-19 exclui o diagnóstico?",
       "reference": "Não. O protocolo ressalta que um resultado negativo no teste sorológico não exclui o diagnóstico de covid-19 e que esse teste não deve ser usado isoladamente para diagnóstico.",
-      "prediction": "o campo de internação, <unk>, data dos sintomas e a data de amostra e 9 data de amostra e 9 para não deve ser anos ou igual à notificação.",
-      "token_f1": 0.24242424242424243,
+      "prediction": "o campo de internação, com srag, com srag, com srag.",
+      "token_f1": 0.13043478260869562,
       "source": "protocolo_hu_ufgd_sindrome_respiratoria_aguda.pdf",
       "page": 8
     },
     {
       "question": "Que campos podem compor um modelo de registro de triagem para síndrome respiratória?",
       "reference": "Um registro de triagem pode organizar idade, sintomas respiratórios, presença de dispneia ou desconforto respiratório, saturação de oxigênio, piora de doença de base e sinais de instabilidade, mantendo os dados de identificação fora da base de demonstração.",
-      "prediction": "o campo de internação, com srag hospitalizado deve ser maior e orienta a unidade orienta a unidade orienta a unidade que realizou.",
-      "token_f1": 0.11940298507462685,
+      "prediction": "o campo de internação, com srag, com srag, com srag.",
+      "token_f1": 0.1754385964912281,
       "source": "guia_srag_ministerio_saude_2025.pdf",
       "page": 4
     },
     {
       "question": "Quais sinais de gravidade devem ser observados em uma síndrome gripal suspeita de covid-19?",
       "reference": "Os sinais listados incluem dispneia, desconforto respiratório, saturação de oxigênio menor ou igual a 94% e exacerbação de doença preexistente.",
-      "prediction": "o guia destaca o guia orienta o campo de srag hospitalizado como indica, com indica e - pcr ou ignorado.",
-      "token_f1": 0.21739130434782608,
+      "prediction": "o guia destaca o guia orienta o paciente de início, usando 1 para sim, com srag, não e 9 para ignorado.",
+      "token_f1": 0.20408163265306126,
       "source": "guia_srag_ministerio_saude_2025.pdf",
       "page": 2
     },
     {
       "question": "Que tipo de amostra deve ser coletada em pacientes hospitalizados com SRAG?",
       "reference": "Pacientes hospitalizados com SRAG devem ter amostras de secreções respiratórias coletadas para exame laboratorial, como painel viral ou RT-PCR multiplex, preferencialmente antes do início do tratamento.",
-      "prediction": "o campo de internação, com indica e - pcr ou <unk>, <unk>, <unk> ou 2 para não deve ignorado.",
-      "token_f1": 0.30000000000000004,
+      "prediction": "o campo de influenza a data de amostra, com srag e orienta ignorado.",
+      "token_f1": 0.21739130434782605,
       "source": "guia_srag_ministerio_saude_2025.pdf",
       "page": 5
     },
     {
       "question": "Como o guia de vigilância integrada resume a definição de SRAG hospitalizado?",
       "reference": "É um indivíduo com síndrome gripal que apresenta dispneia ou desconforto respiratório, pressão ou dor persistente no tórax, saturação de oxigênio menor ou igual a 94% em ar ambiente ou cianose de lábios ou rosto. Óbitos por SRAG também são considerados, independentemente de hospitalização.",
-      "prediction": "o guia orienta o protocolo orienta o protocolo orienta a coleta deve ser prescrição do caso <unk> a unidade assistente.",
-      "token_f1": 0.0547945205479452,
+      "prediction": "o guia orienta o protocolo orienta o protocolo orienta a unidade de srag e devem.",
+      "token_f1": 0.12121212121212122,
       "source": "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf",
       "page": 17
     },
     {
       "question": "O que representa o campo NU_IDADE_N no SIVEP-Gripe?",
       "reference": "NU_IDADE_N registra a idade informada ou calculada para o paciente. O tipo da idade é indicado por TP_IDADE, que diferencia dias, meses e anos.",
-      "prediction": "o guia orienta o campo de internação, com indica dos sintomas e não e - pcr ou ignorado.",
-      "token_f1": 0.25,
+      "prediction": "o guia destaca o guia orienta o paciente de início do paciente, 2 para não e 9 para ignorado.",
+      "token_f1": 0.28571428571428575,
       "source": "dicionario_sivep_2019_2025.pdf",
       "page": 4
     },
     {
       "question": "Que informações de imagem aparecem na ficha de notificação de SRAG?",
       "reference": "A ficha possui campos para resultado de raio X de tórax e aspecto da tomografia, com categorias próprias e opção de exame não realizado.",
-      "prediction": "o guia orienta o campo de internação deve ser maior e orienta a data de notificação.",
-      "token_f1": 0.23255813953488372,
+      "prediction": "o campo de srag hospitalizado.",
+      "token_f1": 0.125,
       "source": "ficha_notificacao_srag_2025.pdf",
       "page": 2
     },
     {
       "question": "Como a vacinação contra covid-19 aparece no dicionário do SIVEP?",
       "reference": "O campo VACINA_COV informa se o paciente recebeu vacina contra covid-19, com categorias sim, não e ignorado.",
-      "prediction": "o campo de internação, <unk>, data dos sintomas e 9 para não deve ser anos.",
-      "token_f1": 0.3333333333333333,
+      "prediction": "o campo de internação, com srag, com srag, com srag ou igual à data de oxigênio uso de início dos sintomas e 9 para não realizado e 9 para ignorado.",
+      "token_f1": 0.3214285714285714,
       "source": "dicionario_sivep_2019_2025.pdf",
       "page": 10
     },
     {
       "question": "Qual é a temporalidade de notificação da SRAG por covid-19 no quadro de vigilância integrada?",
       "reference": "No contexto de SRAG por covid-19, o quadro de vigilância integrada indica notificação em até 24 horas no sistema.",
-      "prediction": "o guia orienta o campo de internação, com srag hospitalizado.",
-      "token_f1": 0.2857142857142857,
+      "prediction": "o guia destaca o guia orienta o paciente de início e para srag, com srag, com srag, com indica ou igual à para sim, quando a.",
+      "token_f1": 0.2222222222222222,
       "source": "guia_ms_vigilancia_integrada_virus_respiratorios_2024.pdf",
       "page": 17
     },
     {
       "question": "O que o campo DT_SIN_PRI representa no SIVEP-Gripe?",
       "reference": "DT_SIN_PRI registra a data dos primeiros sintomas do caso. O dicionário informa que é um campo obrigatório e que essa data deve ser compatível com a data de preenchimento e digitação da notificação.",
-      "prediction": "o guia orienta o campo de internação, com indica dos sintomas e não e - pcr ou ignorado.",
-      "token_f1": 0.32727272727272727,
+      "prediction": "o campo de internação, com srag, com srag, com srag.",
+      "token_f1": 0.20408163265306123,
       "source": "dicionario_sivep_2019_2025.pdf",
       "page": 2
     },
     {
       "question": "O que o campo CS_ESCOL_N representa?",
       "reference": "CS_ESCOL_N registra o nível de escolaridade do paciente, com categorias para sem escolaridade, ensino fundamental, médio, superior, não se aplica e ignorado.",
-      "prediction": "o campo de suporte ventilatório diferencia uso indica e 9 para ignorado.",
-      "token_f1": 0.2926829268292683,
+      "prediction": "o campo de suporte ventilatório diferencia uso invasivo, uso não utilização e 9 para ignorado.",
+      "token_f1": 0.35555555555555557,
       "source": "dicionario_sivep_2019_2025.pdf",
       "page": 5
     },
     {
       "question": "Quando o campo TP_ANTIVIR deve ser informado?",
       "reference": "TP_ANTIVIR é habilitado quando o campo ANTIVIRAL indica uso de antiviral. Ele permite registrar oseltamivir, zanamivir ou outro antiviral.",
-      "prediction": "o guia orienta o campo de internação, com indica dos sintomas e não e não e não deve ser <unk>, com o guia orienta que realizou.",
-      "token_f1": 0.22641509433962262,
+      "prediction": "o protocolo orienta o protocolo orienta o protocolo orienta a coleta de material para exame, como painel coleta de solicitação de início dos sintomas, como, como painel viral ou não deve ser orienta a unidade que realizou a unidade de notificação, com srag.",
+      "token_f1": 0.14285714285714288,
       "source": "dicionario_sivep_2019_2025.pdf",
       "page": 14
     },
     {
       "question": "Como o dicionário codifica o uso de suporte ventilatório?",
       "reference": "SUPORT_VEN usa 1 para suporte invasivo, 2 para suporte não invasivo, 3 para não utilizou e 9 para ignorado.",
-      "prediction": "o campo de suporte ventilatório diferencia uso invasivo, não utilização e 9 para ignorado.",
-      "token_f1": 0.47368421052631576,
+      "prediction": "o campo de suporte ventilatório diferencia uso invasivo, uso não utilização e 9 para ignorado.",
+      "token_f1": 0.46153846153846156,
       "source": "dicionario_sivep_2019_2025.pdf",
       "page": 17
     },
     {
       "question": "Quais categorias aparecem no resultado do teste antigênico?",
       "reference": "O resultado do teste antigênico pode ser positivo, negativo, inconclusivo, não realizado, aguardando resultado ou ignorado.",
-      "prediction": "o campo de oxigênio abaixo de 95 %, usando 1 para não e 9 para ignorado.",
-      "token_f1": 0.25641025641025644,
+      "prediction": "o guia destaca o guia orienta o paciente de início, 2 para não e ignorado.",
+      "token_f1": 0.2631578947368421,
       "source": "dicionario_sivep_2019_2025.pdf",
       "page": 18
     },
     {
       "question": "O que o campo PCR_VSR representa?",
       "reference": "PCR_VSR indica a identificação de vírus sincicial respiratório entre os vírus pesquisados por RT-PCR ou outro método de biologia molecular.",
-      "prediction": "o campo de suporte ventilatório diferencia uso indica e 9 ignorado.",
-      "token_f1": 0.1714285714285714,
+      "prediction": "o campo de suporte ventilatório diferencia uso invasivo, não invasivo, não invasivo, não realizado e 9 para ignorado.",
+      "token_f1": 0.08888888888888888,
       "source": "dicionario_sivep_2019_2025.pdf",
       "page": 21
     }

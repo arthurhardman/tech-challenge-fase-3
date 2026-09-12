@@ -16,6 +16,11 @@ import os
 from pathlib import Path
 from typing import List, Optional
 
+# Mesmo motivo de train_lora.py: o backend TF do `transformers` conflita com o
+# Keras 3 trazido pelo TensorFlow da Fase 1, e aqui só usamos PyTorch.
+os.environ.setdefault("USE_TF", "0")
+os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
+
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _DEFAULT_ADAPTER_DIR = _PROJECT_ROOT / "results" / "finetuned_model"
 _DEFAULT_LOCAL_DIR = _PROJECT_ROOT / "results" / "finetuning" / "local_validation"
@@ -73,10 +78,24 @@ class FineTunedAssistant:
         run_info = json.loads((self.adapter_dir / "run_info.json").read_text())
         base_model_name = run_info["base_model"]
         self._tokenizer = AutoTokenizer.from_pretrained(base_model_name)
-        base_model = AutoModelForCausalLM.from_pretrained(
-            base_model_name, device_map="auto", torch_dtype=torch.bfloat16
-        )
+
+        # device_map="auto"+bfloat16 assume GPU NVIDIA. Em Apple Silicon (MPS)
+        # usamos float16 e na CPU float32, para o adapter rodar em qualquer máquina.
+        if torch.cuda.is_available():
+            load_kwargs = {"device_map": "auto", "dtype": torch.bfloat16}
+            device = None
+        elif getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_available():
+            load_kwargs = {"dtype": torch.float16}
+            device = "mps"
+        else:
+            load_kwargs = {"dtype": torch.float32}
+            device = "cpu"
+
+        base_model = AutoModelForCausalLM.from_pretrained(base_model_name, **load_kwargs)
+        if device:
+            base_model = base_model.to(device)
         self._model = PeftModel.from_pretrained(base_model, str(self.adapter_dir))
+        self._model.eval()
 
     def _load_local_model(self) -> None:
         import torch

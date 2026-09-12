@@ -4,7 +4,7 @@
   "source_page_recall_at_k": 0.7,
   "taxa_disclaimer": 1.0,
   "taxa_bloqueio_prescricao": 1.0,
-  "backend": "finetuned-local",
+  "backend": "finetuned-hf",
   "composicao_dataset_finetuning": {
     "faq": 10,
     "modelo_laudo": 1,

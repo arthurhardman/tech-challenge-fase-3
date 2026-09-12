@@ -66,6 +66,31 @@ def _rouge_l(reference: str, hypothesis: str) -> float:
     return 2 * precision * recall / (precision + recall)
 
 
+def _balance_by_category(records: List[dict], max_examples: int) -> List[dict]:
+    """Amostra em round-robin entre as categorias presentes no split de teste.
+
+    Garante que categorias minoritárias (protocolo_oficial) apareçam na
+    avaliação mesmo quando representam poucos por cento do arquivo.
+    """
+    buckets: dict = {}
+    for rec in records:
+        buckets.setdefault(rec.get("category", "sem_categoria"), []).append(rec)
+
+    selected: List[dict] = []
+    idx = 0
+    # Round-robin: uma volta por índice, pegando um exemplo de cada categoria.
+    while len(selected) < max_examples:
+        adicionou = False
+        for cat in sorted(buckets):
+            if idx < len(buckets[cat]) and len(selected) < max_examples:
+                selected.append(buckets[cat][idx])
+                adicionou = True
+        if not adicionou:
+            break
+        idx += 1
+    return selected
+
+
 def _load_test_set(path: Path) -> List[dict]:
     records = []
     with open(path, "r", encoding="utf-8") as f:
@@ -94,23 +119,52 @@ def run_full_evaluation(
     base_model_name: str,
     test_path: Path,
     max_examples: int = 100,
+    balance_by_category: bool = True,
 ) -> dict:
     """
     Avaliação completa (requer GPU + transformers/peft instalados). Compara
     o modelo base "puro" com o modelo base + adapter LoRA no mesmo conjunto
     de perguntas de teste.
+
+    `balance_by_category` é importante para não medir só uma fatia do domínio:
+    o split de teste é ~97% literatura (PubMedQA/MedQuAD) e ~3% protocolo
+    oficial de SRAG. Pegar os N primeiros registros traria apenas literatura, e
+    as métricas de disclaimer/citação de fonte — que só fazem sentido nas
+    respostas de protocolo — apareceriam zeradas sem que isso indique falha.
     """
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
     from peft import PeftModel
 
-    tokenizer = AutoTokenizer.from_pretrained(base_model_name)
-    base_model = AutoModelForCausalLM.from_pretrained(
-        base_model_name, device_map="auto", torch_dtype=torch.bfloat16
-    )
-    tuned_model = PeftModel.from_pretrained(base_model, str(adapter_dir))
+    # bfloat16 + device_map="auto" pressupõem GPU NVIDIA. Em Apple Silicon
+    # usamos float16 em MPS e float32 na CPU.
+    if torch.cuda.is_available():
+        load_kwargs = {"device_map": "auto", "dtype": torch.bfloat16}
+        device = None
+    elif getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_available():
+        load_kwargs = {"dtype": torch.float16}
+        device = "mps"
+    else:
+        load_kwargs = {"dtype": torch.float32}
+        device = "cpu"
 
-    test_set = _load_test_set(test_path)[:max_examples]
+    tokenizer = AutoTokenizer.from_pretrained(base_model_name)
+    base_model = AutoModelForCausalLM.from_pretrained(base_model_name, **load_kwargs)
+    if device:
+        base_model = base_model.to(device)
+    # `PeftModel` embrulha o mesmo objeto do modelo base; para comparar os dois
+    # precisamos de uma cópia independente, senão o "base" já sai adaptado.
+    base_only = AutoModelForCausalLM.from_pretrained(base_model_name, **load_kwargs)
+    if device:
+        base_only = base_only.to(device)
+    tuned_model = PeftModel.from_pretrained(base_model, str(adapter_dir))
+    base_model = base_only
+
+    test_set = _load_test_set(test_path)
+    if balance_by_category:
+        test_set = _balance_by_category(test_set, max_examples)
+    else:
+        test_set = test_set[:max_examples]
 
     rows = []
     for rec in test_set:
@@ -138,6 +192,26 @@ def run_full_evaluation(
 
 def _summarize(rows: List[dict]) -> dict:
     n = len(rows) or 1
+
+    # As métricas globais escondem o comportamento por domínio: disclaimer e
+    # citação de fonte só são esperados nas respostas de protocolo, não nas de
+    # literatura (PubMedQA/MedQuAD), cujas referências não têm esse formato.
+    por_categoria: dict = {}
+    for row in rows:
+        cat = row.get("category") or "sem_categoria"
+        por_categoria.setdefault(cat, []).append(row)
+
+    resumo_categorias = {
+        cat: {
+            "n": len(items),
+            "rouge_l_base": round(sum(r["rouge_l_base"] for r in items) / len(items), 4),
+            "rouge_l_tuned": round(sum(r["rouge_l_tuned"] for r in items) / len(items), 4),
+            "pct_disclaimer": round(100 * sum(r["tuned_has_disclaimer"] for r in items) / len(items), 1),
+            "pct_cita_fonte": round(100 * sum(r["tuned_cites_source"] for r in items) / len(items), 1),
+        }
+        for cat, items in sorted(por_categoria.items())
+    }
+
     return {
         "n_examples": len(rows),
         "rouge_l_base_mean": round(sum(r["rouge_l_base"] for r in rows) / n, 4),
@@ -148,6 +222,7 @@ def _summarize(rows: List[dict]) -> dict:
         "pct_respostas_citam_fonte": round(
             100 * sum(r["tuned_cites_source"] for r in rows) / n, 1
         ),
+        "por_categoria": resumo_categorias,
         "detalhes": rows,
     }
 
@@ -159,6 +234,12 @@ def main():
                          help="Se omitido, lê de results/finetuned_model/run_info.json")
     parser.add_argument("--test-path", type=str, default="data/finetuning/processed/test.jsonl")
     parser.add_argument("--max-examples", type=int, default=100)
+    parser.add_argument(
+        "--no-balance", action="store_true",
+        help="Usa os N primeiros registros em vez de amostrar entre as categorias. "
+             "O split de teste é ~97%% literatura, então sem balanceamento as "
+             "perguntas de protocolo oficial ficam de fora.",
+    )
     args = parser.parse_args()
 
     adapter_dir = _PROJECT_ROOT / args.adapter_dir
@@ -173,7 +254,10 @@ def main():
         base_model_name = json.loads(run_info_path.read_text())["base_model"]
 
     test_path = _PROJECT_ROOT / args.test_path
-    result = run_full_evaluation(adapter_dir, base_model_name, test_path, args.max_examples)
+    result = run_full_evaluation(
+        adapter_dir, base_model_name, test_path, args.max_examples,
+        balance_by_category=not args.no_balance,
+    )
 
     out_json = adapter_dir / "eval_report.json"
     out_json.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
